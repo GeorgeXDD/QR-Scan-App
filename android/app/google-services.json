@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "444313779512",
+    "project_id": "qrapp-5328c",
+    "storage_bucket": "qrapp-5328c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:444313779512:android:1eac3556d522a6382755cd",
+        "android_client_info": {
+          "package_name": "com.example.price_comparison_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbJ-KqhLNpXBgr3IN5I6_KAdFcijC2F48"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:444313779512:android:39e5ede3ad9f2d102755cd",
+        "android_client_info": {
+          "package_name": "com.example.qr_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbJ-KqhLNpXBgr3IN5I6_KAdFcijC2F48"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
