@@ -7,8 +7,7 @@ class EbayService {
 
   Future<Map<String, dynamic>?> fetchProductDetails(String url) async {
     print(url);
-    var link =
-        'https://api.ebay.com/buy/browse/v1/item_summary/search?q=857199008597';
+    var link = 'https://api.ebay.com/buy/browse/v1/item_summary/search?q=$url';
     var endpoint = Uri.parse(link);
     var response = await http.get(
       endpoint,
