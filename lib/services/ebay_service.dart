@@ -3,9 +3,9 @@ import 'dart:convert';
 
 class EbayService {
   final String token =
-      'v^1.1#i^1#p^1#f^0#I^3#r^0#t^H4sIAAAAAAAAAOVYe2wURRi/a3uFBlAElFoeHgsYhNze7t5zl/bw+q6U9to7Wi0Izu7OlqV7u8fOnO2BIWdDqkaDEuIjgRjEBCNGTWNiNEbji4D+wcMHRA0xYlCiNRqDQEgEZ7elXCvh1Uts4v1zmW+++eb3+833zcwOky0uWdxX33d2inNCwa4sky1wOtlJTEmxa8kthQVlLgeT4+DclV2QLeotPFWOQFJLCa0QpQwdQXdPUtORYBsrqLSpCwZAKhJ0kIRIwJIQj65oFDiaEVKmgQ3J0Ch3Q3UFBYI8FGUehANA8vtEhVj1SzETBun3wZAcAAEQlCSRk3jSj1AaNugIAx1XUBzD+T0M5+FCCSYs+IKCn6XDnL+DcrdBE6mGTlxohorYcAV7rJmD9epQAULQxCQIFWmI1sabow3VNU2Jcm9OrMiQDnEMcBqNbFUZMnS3AS0Nrz4Nsr2FeFqSIEKUNzI4w8igQvQSmJuAb0st8orPz8kBmWjtl8KhvEhZa5hJgK+Ow7KoskexXQWoYxVnrqUoUUNcDyU81GoiIRqq3dZfSxpoqqJCs4KqqYw+EI3FqEgdNMxOWGt4WlrjEtA9sdZqDwsgL3FcgPEoigLlUDA0NM1grCGRR81TZeiyakmG3E0GroQEMxytDJejDHFq1pvNqIItPDl+LHNJQZbvsJZ0cA3TeJ1urSpMEhncdvPa+g+PxthUxTSGwxFGd9gCkaJJpVSZGt1pZ+JQ8vSgCmodxinB6+3u7qa7fTQR0MsxDOu9f0VjXFoHk4Cyfa1at/zVaw/wqDYVCZKRSBVwJkWw9JBMJQD0Tiri5xk2zAzpPhJWZLT1X4Yczt6R9ZCv+giIPjEQUvgwqRHo98n5qI/IUIp6LRxQBBlPEphdEKc0IEGPRPIsnYSmKgu+gML5wgr0yEFe8fh5RfGIATnoYRUIGQhFUeLD/58yud5Ej0PJhDhPmZ6nLMehWpU1RS3UmO5eruvreTYDO4N1cn1nV3yDqbaHY3zSL/awsD1acb21cEXyVZpKlEmQ+fMlgFXr+RGh3kAYymOiF5eMFIwZmiplxtcC+0w5BkyciUNNI4YxkYymUg352qnzRO+GNombY53P8+k/OZuuyApZCTu+WFnjEQkAUiptnT60ZCS9BiDXDq9V68S81kY9Jt4qubOOK9aE5CBbVR68bNI2ZRo9LNEmREbaJPdsutm6fSWMLqiT0wybhqZBs40dczUnk2kMRA2Ot7LOQ4KrYJwdtWyI4RnOR8aMiZdkH6Rrx9uWlL+NuGjZDV6ovSM/7iMO+8f2Oj9mep0fFDidTDmzkJ3PzCsuXFlUOLkMqRjSKlBopHbq5JvVhHQXzKSAahZMd/y5+9n6qrKa5ucWb0pkDu/Y75ic87aw60GmdPh1oaSQnZTz1MDMvtzjYm+dOYXzMxwXYsK+oJ/tYOZf7i1i7yiawdw2a2920bn+U/uKX9iyYF7dwbNnljFThp2cTpejqNfp2PbGvoWHlm5ZM6c7s3zzfZO3P56mUR04OO2n739vawktmbFq0+qPLuI5A7/1fHj79spp7935GC39GhaFbxbs/HxRq9i7+8m5/VNfXbu/9ORXDd99KR+hqD3901seqYyBqfM2rgn/de/WSYe/Pr7ni0OzNuzd4az+NvrK6c2P3rNyY2uk1HX8aPuFZMGA8vqFI673J7wz9e5zga4njr18YKLmOLp1588nTiqOh86XiNSx0plLG9vfRKHivlXlE5/5lK9894edd7115umJ4o/TX0P0ts8Wa7N3ZDvUX1pmsdRc9/kstXmrUZ/o399REx/of+n5P/oM/u2y0xebVh848eIn9MCjWRd9eMv2p/5emB5cy38Au/D0OfURAAA=';
+      'v^1.1#i^1#r^0#p^1#f^0#I^3#t^H4sIAAAAAAAAAOVYa2wUVRTebbeF8mhjQGsaxWUqhKAze2f2NTvpLlla+qClXbrLohDFedxpp52dGWZmaTfGuK4R+FGCKDSxGtNAg8SEoKBBBG0CJEoUtGok8jAY/YENmKgpRhLFmelStpXw6iY2cf9s7rnnnvt93z3n3jsXpItLFm+s3/jHbPu0gv40SBfY7fhMUFJc9FhpYUFFkQ3kONj704+mHZnCi1UanRAVqhVqiixp0NmdECWNsoxBJKlKlExrgkZJdAJqlM5S0fCKJorAAKWosi6zsog4G2qCCEeSvIf2unme8eE09BtW6XrMmBxECBxnPYAMuAEkPIzfY/RrWhI2SJpOS7rRDwgPCgiU8MdwN+UhKRzHAl7vGsQZh6omyJLhggEkZMGlrLFqDtZbQ6U1Daq6EQQJNYRroy3hhpplzbEqV06sUFaHqE7rSW18q1rmoDNOi0l462k0y5uKJlkWahriCo3OMD4oFb4O5h7gW1J7SZb0cW7cDz0QEiyTFylrZTVB67fGYVoEDuUtVwpKuqCnbqeooQbTAVk922o2QjTUOM2/lUlaFHgBqkFk2dLwk+FIBAnVQVltg7UyurI1ytISGmmtQY1sCrAE4QUoz/OQ8/v82WlGY2VFnjBPtSxxgimZ5myW9aXQwAwnKuPOUcZwapFa1DCvm3hy/bxjCuJrzCUdXcOk3i6ZqwoThgxOq3l7/cdG67oqMEkdjkWY2GEJFERoRRE4ZGKnlYnZ5OnWgki7riuUy9XV1YV1uTFDQBcBAO56YkVTlG2HCRqxfM1aN/2F2w9ABYsKC42RmkDpKcXA0m1kqgFAakNCngDASZDVfTys0ETrvww5nF3j6yFf9eHDfV5AEn7aS/oY3JuXrSaUTVGXiQMydApN0Gon1BWRZiHKGnmWTEBV4Ci3lyfcJA9RzhfgUU+A51HGy/lQnIcQQMgwbID8/5TJnSZ6FLIq1POU6XnKct1fK+AqI/qbkl2NktQRwFOwzVfH1bd1RterwmoyEkh4mG4crg4H77QWbkq+WhQMZWLG/PkSwKz1/IhQL2s65CZFL8rKCozIosCmptYCu1UuQqt6KgpF0TBMimRYURrytVPnid5dbRL3xjqf59N/cjbdlJVmJuzUYmWO14wAtCJg5umDsXLCJdPGtcNl1rphXmehnhRvwbizTinWBslRtgI3etnELMqYtoHFVKjJSdW4Z2Mt5u0rJndCyTjNdFUWRajG8UlXcyKR1GlGhFOtrPOQ4AI9xY5a3A8CwIP7ApNbNtY6SNdNtS0pfxuxY8ldXqhd4z/uQzbrh2fsR0HG/nGB3Q6qwAK8EswvLlzlKJxVoQk6xASaxzShTTK+WVWIdcKUQgtqwRzbbzt31FdXLGvpXfxsLPXl65/YZuW8LfQ/BR4ce10oKcRn5jw1gIdu9BThZeWzCQ8gCD/u9pA4vgZU3uh14A845r7/42B5+Qt/+Tb/xG/duZ+cGxlK9YHZY052e5HNkbHblvfuHehknj72A8J8uGDeYOUj6KfHnx/q65i+6Wqv91jtruO/tiwv6H4ms/jgtfiVi9sjR+pOPDdSOXCpbV9674XNr2zq3lad6L9kP/Ne1+G3Bw59MFzFle35fdG5ogv+v0d+mf75d/vLrnUseQMrffjI2Z/XznjzwDdbF55pGj5aWtLT8dE1pdoDVpWdt/W0nrxysqd0x8xTw7HTC15c9PV05txLfYd337/x/LR445YZRPwrShjc9/Lu8Nn5pxFs3p/t5VXp1xqbRw7smqO+tYF+52D/5cGhbUMntrhOVXxR+NnVg46+xqPF8W83DCRidRmHSvd13Hfk3Z6R9Zn+wbXbF37/qnpo34zHheE9l0fX8h+PXEG79REAAA==';
 
-  Future<Map<String, dynamic>?> fetchProductDetails(String url) async {
+  Future<List<Map<String, dynamic>>?> fetchProductDetails(String url) async {
     print(url);
     var link = 'https://api.ebay.com/buy/browse/v1/item_summary/search?q=$url';
     var endpoint = Uri.parse(link);
@@ -20,13 +20,10 @@ class EbayService {
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      if (responseData['itemSummaries'] != null &&
-          responseData['itemSummaries'].isNotEmpty) {
-        return responseData['itemSummaries'][0];
-      } else {
-        print('No items found.');
-        return null;
-      }
+      // Return the whole list of items
+      List<Map<String, dynamic>> items =
+          List<Map<String, dynamic>>.from(responseData['itemSummaries']);
+      return items.isNotEmpty ? items : null;
     } else {
       print('Failed to load product data: ${response.body}');
       return null;

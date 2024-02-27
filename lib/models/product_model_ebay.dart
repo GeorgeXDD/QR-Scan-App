@@ -1,27 +1,61 @@
 class Product {
-  final String title;
-  final String imageUrl;
-  final String itemWebUrl;
-  final String priceValue;
-  final String currency;
+  String? itemId;
+  String? title;
+  String? imageUrl;
+  String? itemWebUrl;
+  String? priceValue;
+  String? currency;
+  bool isFavorited;
 
   Product({
-    required this.title,
-    required this.imageUrl,
-    required this.itemWebUrl,
-    required this.priceValue,
-    required this.currency,
+    this.itemId,
+    this.title,
+    this.imageUrl,
+    this.itemWebUrl,
+    this.priceValue,
+    this.currency,
+    this.isFavorited = false,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
-    var valueData = json['price'] ?? {};
-    var imageData = json['image'] ?? {};
+    var image = json['image'] ?? {};
+    var price = json['price'] ?? {};
     return Product(
-      title: json['title'] ?? 'Product not found',
-      imageUrl: imageData['imageUrl'] ?? 'https://via.placeholder.com/150',
-      itemWebUrl: json['itemWebUrl'],
-      priceValue: valueData['value'] ?? 0.0,
-      currency: valueData['currency'] ?? '',
+      itemId: json['itemId'] as String?,
+      title: json['title'] as String?,
+      imageUrl: image['imageUrl'] as String?,
+      itemWebUrl: json['itemWebUrl'] as String?,
+      priceValue: price['value'] as String?,
+      currency: price['currency'] as String?,
+      isFavorited: false,
     );
+  }
+
+  factory Product.fromFirestore(Map<String, dynamic> json) {
+    return Product(
+      itemId: json['itemId'] as String?,
+      title: json['title'] as String?,
+      imageUrl: json['imageUrl'] as String?,
+      itemWebUrl: json['itemWebUrl'] as String?,
+      priceValue: json['priceValue'] as String?,
+      currency: json['currency'] as String?,
+      isFavorited: json['isFavorited'] as bool? ?? false,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'itemId': itemId ?? '0',
+      'title': title ?? 'N/A',
+      'imageUrl': imageUrl ?? 'https://via.placeholder.com/150',
+      'itemWebUrl': itemWebUrl ?? '',
+      'priceValue': priceValue ?? '0',
+      'currency': currency ?? '',
+      'isFavorited': isFavorited,
+    };
+  }
+
+  void toggleFavoriteStatus() {
+    isFavorited = !isFavorited;
   }
 }
