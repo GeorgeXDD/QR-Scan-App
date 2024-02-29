@@ -36,6 +36,9 @@ class _ScanPageState extends State<ScanPage> {
 
         var ebayService = EbayService();
         var productDataList = await ebayService.fetchProductDetails(url);
+
+        await _incrementScannedItemsCount();
+
         if (productDataList != null && productDataList.isNotEmpty) {
           var favoritesSnapshot = await FirebaseFirestore.instance
               .collection('users')
@@ -59,6 +62,24 @@ class _ScanPageState extends State<ScanPage> {
       }
     } catch (e) {
       setState(() => _scanResult = 'Scan failed: $e');
+    }
+  }
+
+  Future<void> _incrementScannedItemsCount() async {
+    if (userId != null) {
+      var userDoc = FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('userProfile')
+          .doc(userId);
+      FirebaseFirestore.instance.runTransaction((transaction) async {
+        var userProfileSnapshot = await transaction.get(userDoc);
+        if (userProfileSnapshot.exists) {
+          int currentCount =
+              userProfileSnapshot.data()?['scannedItemsCount'] ?? 0;
+          transaction.update(userDoc, {'scannedItemsCount': currentCount + 1});
+        }
+      });
     }
   }
 

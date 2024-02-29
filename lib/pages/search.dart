@@ -18,24 +18,49 @@ class _SearchPageState extends State<SearchPage> {
   Set<String> _favoritesIds = {};
   List<Product> _searchResults = [];
   bool _isSearching = false;
+  List<Map<String, dynamic>> searchHistory = [];
 
   @override
   void initState() {
     super.initState();
     _fetchFavorites();
+    _fetchSearchHistory();
+    _controller.addListener(_filterSearchHistory);
   }
 
-  Future<void> _fetchFavorites() async {
+  @override
+  void dispose() {
+    _controller.removeListener(_filterSearchHistory);
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _filterSearchHistory() {
+    final query = _controller.text;
+    if (query.isNotEmpty) {
+      final filteredHistory = searchHistory.where((history) {
+        final term = history['term'].toLowerCase();
+        return term.contains(query.toLowerCase());
+      }).toList();
+      setState(() {
+        searchHistory = filteredHistory;
+      });
+    } else {
+      _fetchSearchHistory();
+    }
+  }
+
+  Future<void> _updateSearchHistory(String term) async {
     if (userId == null) return;
-    var snapshot = await FirebaseFirestore.instance
+    final docRef = FirebaseFirestore.instance
         .collection('users')
         .doc(userId)
-        .collection('favorites')
-        .get();
+        .collection('searchHistory')
+        .doc(term);
 
-    setState(() {
-      _favoritesIds = Set.from(snapshot.docs.map((doc) => doc.id));
-    });
+    var data = {'term': term, 'timestamp': FieldValue.serverTimestamp()};
+
+    await docRef.set(data, SetOptions(merge: true));
   }
 
   void _performSearch(String query) async {
@@ -43,6 +68,7 @@ class _SearchPageState extends State<SearchPage> {
       _isSearching = true;
     });
 
+    await _updateSearchHistory(query);
     final items = await _ebayService.fetchProductDetails(query);
     if (items != null) {
       setState(() {
@@ -59,6 +85,50 @@ class _SearchPageState extends State<SearchPage> {
         _isSearching = false;
       });
     }
+  }
+
+  Future<void> _fetchSearchHistory() async {
+    if (userId == null) return;
+    var snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('searchHistory')
+        .orderBy('timestamp', descending: true)
+        .get();
+
+    var fetchedHistory =
+        snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+
+    if (!_controller.text.isNotEmpty) {
+      setState(() {
+        searchHistory = fetchedHistory;
+      });
+    }
+  }
+
+  Future<void> _removeSearchTerm(String term) async {
+    if (userId == null) return;
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('searchHistory')
+        .doc(term)
+        .delete();
+
+    _fetchSearchHistory();
+  }
+
+  Future<void> _fetchFavorites() async {
+    if (userId == null) return;
+    var snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('favorites')
+        .get();
+
+    setState(() {
+      _favoritesIds = Set.from(snapshot.docs.map((doc) => doc.id));
+    });
   }
 
   Future<void> _toggleFavorite(Product product) async {
@@ -78,6 +148,41 @@ class _SearchPageState extends State<SearchPage> {
     setState(() {
       product.isFavorited = !product.isFavorited;
     });
+  }
+
+  Widget _buildSearchHistoryList() {
+    return ListView.separated(
+      itemCount: searchHistory.length,
+      itemBuilder: (context, index) {
+        var item = searchHistory[index];
+        return ListTile(
+          title: Padding(
+            padding: EdgeInsets.only(left: 8.0),
+            child: Text(item['term'], style: TextStyle(color: Colors.white)),
+          ),
+          trailing: IconButton(
+            icon: Icon(
+              Icons.close,
+              color: Colors.white,
+              size: 20,
+            ),
+            onPressed: () => _removeSearchTerm(item['term']),
+          ),
+          contentPadding: EdgeInsets.only(left: 22.0, right: 18.0),
+          onTap: () {
+            _controller.text = item['term'];
+            _performSearch(item['term']);
+          },
+        );
+      },
+      separatorBuilder: (context, index) => Padding(
+        padding: EdgeInsets.symmetric(horizontal: 14.0),
+        child: FractionallySizedBox(
+          widthFactor: 1,
+          child: Divider(color: Colors.white24),
+        ),
+      ),
+    );
   }
 
   Widget _buildSearchResultCard(Product product) {
@@ -157,27 +262,55 @@ class _SearchPageState extends State<SearchPage> {
                     hintStyle: TextStyle(color: Colors.grey),
                     border: InputBorder.none,
                   ),
-                  onSubmitted: (value) => _performSearch(value),
+                  onSubmitted: (value) {
+                    if (value.isNotEmpty) {
+                      _performSearch(value);
+                    }
+                  },
                 ),
               ),
               IconButton(
                 icon: Icon(Icons.cancel, color: Colors.grey),
                 onPressed: () {
                   _controller.clear();
-                  _performSearch('');
+                  _filterSearchHistory();
+                  setState(() => _isSearching = false);
                 },
               ),
             ],
           ),
         ),
       ),
-      body: _isSearching
-          ? Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: _searchResults.length,
-              itemBuilder: (context, index) =>
-                  _buildSearchResultCard(_searchResults[index]),
+      body: Column(
+        children: [
+          if (!_controller.text.isNotEmpty &&
+              !_isSearching &&
+              _searchResults.isEmpty)
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 18.0, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("Recent",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18)),
+                ],
+              ),
             ),
+          Expanded(
+            child: _isSearching || _searchResults.isNotEmpty
+                ? ListView.builder(
+                    itemCount: _searchResults.length,
+                    itemBuilder: (context, index) =>
+                        _buildSearchResultCard(_searchResults[index]),
+                  )
+                : _buildSearchHistoryList(),
+          ),
+        ],
+      ),
       backgroundColor: Color(0xFF272829),
     );
   }
