@@ -51,13 +51,9 @@ class _FavouritesPageState extends State<FavouritesPage> {
       margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
       child: GestureDetector(
         onTap: () async {
-          if (product.itemWebUrl?.isNotEmpty ?? false) {
-            final Uri url = Uri.parse(product.itemWebUrl!);
-            if (await canLaunchUrl(url)) {
-              await launchUrl(url, mode: LaunchMode.externalApplication);
-            } else {
-              print('Could not launch $url');
-            }
+          if (await canLaunchUrl(Uri.parse(product.itemWebUrl!))) {
+            await launchUrl(Uri.parse(product.itemWebUrl!),
+                mode: LaunchMode.externalApplication);
           }
         },
         child: Card(
@@ -70,7 +66,6 @@ class _FavouritesPageState extends State<FavouritesPage> {
                   product.imageUrl ?? 'https://via.placeholder.com/150',
                   width: 80.0,
                   height: 80.0,
-                  fit: BoxFit.cover,
                 ),
                 SizedBox(width: 16.0),
                 Expanded(
@@ -85,10 +80,22 @@ class _FavouritesPageState extends State<FavouritesPage> {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      SizedBox(height: 4),
                       Text(
                         'Price: ${product.priceValue ?? "0"} ${product.currency ?? ""}',
                         style: TextStyle(fontSize: 16.0),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          // Implement your navigation or action to go to the reviews here
+                        },
+                        child: Text(
+                          'Go to reviews',
+                          style: TextStyle(
+                            decoration: TextDecoration.underline,
+                            color: Colors.blue, // Use your preferred color
+                            fontSize: 14.0,
+                          ),
+                        ),
                       ),
                     ],
                   ),

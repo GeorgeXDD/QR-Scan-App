@@ -87,22 +87,97 @@ class _ScanPageState extends State<ScanPage> {
     Widget itemImage = Image.network(
       product.imageUrl ?? 'https://via.placeholder.com/150',
       fit: BoxFit.cover,
-      width: isFirst ? 150.0 : 100.0,
-      height: isFirst ? 150.0 : 100.0,
+      width: isFirst ? 200.0 : 100.0,
+      height: isFirst ? 200.0 : 100.0,
     );
 
-    return GestureDetector(
-      onTap: () async {
-        if (product.itemWebUrl?.isNotEmpty ?? false) {
-          final Uri url = Uri.parse(product.itemWebUrl!);
-          if (await canLaunchUrl(url)) {
-            await launchUrl(url, mode: LaunchMode.externalApplication);
-          } else {
-            print('Could not launch $url');
-          }
-        }
-      },
-      child: Card(
+    if (isFirst) {
+      return Card(
+        child: GestureDetector(
+          onTap: () async {
+            if (product.itemWebUrl?.isNotEmpty ?? false) {
+              final Uri url = Uri.parse(product.itemWebUrl!);
+              if (await canLaunchUrl(url)) {
+                await launchUrl(url, mode: LaunchMode.externalApplication);
+              }
+            }
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Stack(
+                children: [
+                  Align(
+                    alignment: Alignment.center,
+                    child: itemImage,
+                  ),
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: IconButton(
+                      icon: Icon(product.isFavorited
+                          ? Icons.favorite
+                          : Icons.favorite_border),
+                      color: Colors.red,
+                      onPressed: () async {
+                        final docRef = FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(userId)
+                            .collection('favorites')
+                            .doc(product.itemId);
+
+                        if (product.isFavorited) {
+                          await docRef.delete();
+                        } else {
+                          await docRef.set(product.toMap());
+                        }
+                        setState(() {
+                          product.isFavorited = !product.isFavorited;
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: Text(
+                  product.title ?? 'Product not found',
+                  style: TextStyle(
+                    fontSize: 22.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.visible,
+                  maxLines: 3,
+                ),
+              ),
+              Text(
+                'Price: ${product.priceValue ?? "0"} ${product.currency ?? ""}',
+                style: TextStyle(fontSize: 18.0),
+                textAlign: TextAlign.center,
+              ),
+              InkWell(
+                onTap: () {
+                  // Implement your navigation or action to go to the reviews here
+                },
+                child: Text(
+                  'Go to reviews',
+                  style: TextStyle(
+                    decoration: TextDecoration.underline,
+                    color: Colors.blue, // Use your preferred color
+                    fontSize: 16.0,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              SizedBox(height: 20),
+            ],
+          ),
+        ),
+      );
+    } else {
+      return Card(
         color: Colors.white,
         child: Padding(
           padding: EdgeInsets.all(16.0),
@@ -120,14 +195,29 @@ class _ScanPageState extends State<ScanPage> {
                       Text(
                         product.title ?? 'Product not found',
                         style: TextStyle(
-                            fontSize: isFirst ? 18.0 : 15.0,
-                            fontWeight: FontWeight.bold),
+                          fontSize: 15.0,
+                          fontWeight: FontWeight.bold,
+                        ),
                         overflow: TextOverflow.visible,
-                        maxLines: isFirst ? 3 : 2,
+                        maxLines: 2,
                       ),
                       Text(
-                          'Price: ${product.priceValue ?? "0"} ${product.currency ?? ""}',
-                          overflow: TextOverflow.ellipsis),
+                        'Price: ${product.priceValue ?? "0"} ${product.currency ?? ""}',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      InkWell(
+                        onTap: () {
+                          // Implement your navigation or action to go to the reviews here
+                        },
+                        child: Text(
+                          'Go to reviews',
+                          style: TextStyle(
+                            decoration: TextDecoration.underline,
+                            color: Colors.blue, // Use your preferred color
+                            fontSize: 14.0,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -157,8 +247,8 @@ class _ScanPageState extends State<ScanPage> {
             ],
           ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   @override

@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:qr_app/auth/login.dart';
 import 'package:qr_app/firebase_options.dart';
 import 'pages/favourites.dart';
-import 'pages/history.dart';
 import 'pages/profile.dart';
+import 'pages/reviews.dart';
 import 'pages/scan.dart';
 import 'pages/search.dart';
 
@@ -21,11 +21,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: CheckAuth(), // Use CheckAuth as the main widget
+      home: CheckAuth(),
       routes: {
-        '/login': (context) =>
-            LoginPage(), // Add a named route for the login page
-        '/home': (context) => MainPage(), // Add a named route for the main page
+        '/login': (context) => LoginPage(),
+        '/home': (context) => MainPage(),
       },
     );
   }
@@ -35,22 +34,17 @@ class CheckAuth extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance
-          .authStateChanges(), // Listen to the user's authentication state
+      stream: FirebaseAuth.instance.authStateChanges(),
       builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
         if (snapshot.connectionState == ConnectionState.active) {
           final user = snapshot.data;
 
           if (user != null) {
-            // User is logged in, navigate to the main page
             return MainPage();
           } else {
-            // User is not logged in, navigate to the login page
             return LoginPage();
           }
         }
-
-        // Show a loading indicator or some other UI while checking the authentication state
         return CircularProgressIndicator();
       },
     );
@@ -69,7 +63,7 @@ class _MainPageState extends State<MainPage> {
     ScanPage(),
     SearchPage(),
     FavouritesPage(),
-    HistoryPage(),
+    ReviewsPage(),
     ProfilePage(),
   ];
 
@@ -90,7 +84,7 @@ class _MainPageState extends State<MainPage> {
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
           BottomNavigationBarItem(
               icon: Icon(Icons.favorite), label: 'Favourites'),
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: 'History'),
+          BottomNavigationBarItem(icon: Icon(Icons.reviews), label: 'Reviews'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
         currentIndex: _selectedIndex,

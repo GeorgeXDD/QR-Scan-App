@@ -186,57 +186,72 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget _buildSearchResultCard(Product product) {
-    return GestureDetector(
-      onTap: () async {
-        if (await canLaunchUrl(Uri.parse(product.itemWebUrl!))) {
-          await launchUrl(Uri.parse(product.itemWebUrl!));
-        }
-      },
-      child: Card(
-        color: Colors.white,
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Image.network(
-                product.imageUrl ?? 'https://via.placeholder.com/150',
-                width: 100.0,
-                height: 100.0,
-              ),
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.only(left: 16.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        product.title ?? 'Product not found',
-                        style: TextStyle(
-                            fontSize: 18.0, fontWeight: FontWeight.bold),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Text(
-                          'Price: ${product.priceValue ?? "0"} ${product.currency ?? ""}'),
-                    ],
+    return Container(
+        margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+        child: GestureDetector(
+          onTap: () async {
+            if (await canLaunchUrl(Uri.parse(product.itemWebUrl!))) {
+              await launchUrl(Uri.parse(product.itemWebUrl!));
+            }
+          },
+          child: Card(
+            color: Colors.white,
+            margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+            child: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Image.network(
+                    product.imageUrl ?? 'https://via.placeholder.com/150',
+                    width: 80.0,
+                    height: 80.0,
                   ),
-                ),
+                  SizedBox(width: 16.0),
+                  Expanded(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          product.title ?? 'Product not found',
+                          style: TextStyle(
+                              fontSize: 18.0, fontWeight: FontWeight.bold),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          'Price: ${product.priceValue ?? "0"} ${product.currency ?? ""}',
+                          style: TextStyle(fontSize: 16.0),
+                        ),
+                        InkWell(
+                          onTap: () {
+                            // Implement your navigation or action to go to the reviews here
+                          },
+                          child: Text(
+                            'Go to reviews',
+                            style: TextStyle(
+                              decoration: TextDecoration.underline,
+                              color: Colors.blue, // Use your preferred color
+                              fontSize: 14.0,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(
+                        product.isFavorited
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                        color: Colors.red),
+                    onPressed: () => _toggleFavorite(product),
+                  ),
+                ],
               ),
-              IconButton(
-                icon: Icon(
-                    product.isFavorited
-                        ? Icons.favorite
-                        : Icons.favorite_border,
-                    color: Colors.red),
-                onPressed: () => _toggleFavorite(product),
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 
   @override
