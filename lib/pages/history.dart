@@ -13,27 +13,27 @@ class HistoryPage extends StatelessWidget {
   final List<HistoricalItem> history = [
     HistoricalItem(
         imageUrl: 'https://via.placeholder.com/150',
-        title: 'Historical Item 1',
+        title: 'History Item 1',
         price: '\$19.99'),
     HistoricalItem(
         imageUrl: 'https://via.placeholder.com/150',
-        title: 'Historical Item 2',
+        title: 'History Item 2',
         price: '\$29.99'),
     HistoricalItem(
         imageUrl: 'https://via.placeholder.com/150',
-        title: 'Historical Item 3',
+        title: 'History Item 3',
         price: '\$39.99'),
     HistoricalItem(
         imageUrl: 'https://via.placeholder.com/150',
-        title: 'Historical Item 4',
+        title: 'History Item 4',
         price: '\$39.99'),
     HistoricalItem(
         imageUrl: 'https://via.placeholder.com/150',
-        title: 'Historical Item 5',
+        title: 'History Item 5',
         price: '\$39.99'),
     HistoricalItem(
         imageUrl: 'https://via.placeholder.com/150',
-        title: 'Historical Item 6',
+        title: 'History Item 6',
         price: '\$39.99')
   ];
 

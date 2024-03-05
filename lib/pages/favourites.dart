@@ -47,55 +47,60 @@ class _FavouritesPageState extends State<FavouritesPage> {
   }
 
   Widget _buildFavoriteCard(Product product) {
-    return GestureDetector(
-      onTap: () async {
-        if (product.itemWebUrl?.isNotEmpty ?? false) {
-          final Uri url = Uri.parse(product.itemWebUrl!);
-          if (await canLaunchUrl(url)) {
-            await launchUrl(url, mode: LaunchMode.externalApplication);
-          } else {
-            print('Could not launch $url');
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+      child: GestureDetector(
+        onTap: () async {
+          if (product.itemWebUrl?.isNotEmpty ?? false) {
+            final Uri url = Uri.parse(product.itemWebUrl!);
+            if (await canLaunchUrl(url)) {
+              await launchUrl(url, mode: LaunchMode.externalApplication);
+            } else {
+              print('Could not launch $url');
+            }
           }
-        }
-      },
-      child: Card(
-        color: Colors.white,
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Image.network(
+        },
+        child: Card(
+          color: Colors.white,
+          child: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Image.network(
                   product.imageUrl ?? 'https://via.placeholder.com/150',
-                  width: 100.0,
-                  height: 100.0),
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.only(left: 16.0),
+                  width: 80.0,
+                  height: 80.0,
+                  fit: BoxFit.cover,
+                ),
+                SizedBox(width: 16.0),
+                Expanded(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(product.title ?? 'Product not found',
-                          style: TextStyle(
-                              fontSize: 18.0, fontWeight: FontWeight.bold),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis),
+                      Text(
+                        product.title ?? 'Product not found',
+                        style: TextStyle(
+                            fontSize: 18.0, fontWeight: FontWeight.bold),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                       SizedBox(height: 4),
                       Text(
-                          'Price: ${product.priceValue ?? "0"} ${product.currency ?? ""}',
-                          style: TextStyle(fontSize: 16.0)),
+                        'Price: ${product.priceValue ?? "0"} ${product.currency ?? ""}',
+                        style: TextStyle(fontSize: 16.0),
+                      ),
                     ],
                   ),
                 ),
-              ),
-              IconButton(
-                icon: Icon(Icons.favorite, color: Colors.red),
-                onPressed: () async {
-                  await _deleteFavorite(product.itemId);
-                },
-              ),
-            ],
+                IconButton(
+                  icon: Icon(Icons.favorite, color: Colors.red),
+                  onPressed: () async {
+                    await _deleteFavorite(product.itemId);
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -113,12 +118,22 @@ class _FavouritesPageState extends State<FavouritesPage> {
         ),
         backgroundColor: Color(0xFF272829),
       ),
-      body: ListView.builder(
-        itemCount: _favorites.length,
-        itemBuilder: (context, index) {
-          return _buildFavoriteCard(_favorites[index]);
-        },
-      ),
+      body: _favorites.isEmpty
+          ? Center(
+              child: Text(
+                "The page is empty, please add a favorite item first!",
+                style: TextStyle(
+                    color: const Color.fromARGB(255, 210, 210, 210),
+                    fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+            )
+          : ListView.builder(
+              itemCount: _favorites.length,
+              itemBuilder: (context, index) {
+                return _buildFavoriteCard(_favorites[index]);
+              },
+            ),
     );
   }
 }
