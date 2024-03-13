@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../models/product_model_ebay.dart';
 import '../services/ebay_service.dart';
+import 'reviewDetails.dart';
 
 class SearchPage extends StatefulWidget {
   @override
@@ -225,13 +226,19 @@ class _SearchPageState extends State<SearchPage> {
                         ),
                         InkWell(
                           onTap: () {
-                            // Implement your navigation or action to go to the reviews here
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => ReviewDetailsPage(
+                                itemId: product.itemId!,
+                                imageUrl: product.imageUrl!,
+                                itemUrl: product.itemWebUrl!,
+                              ),
+                            ));
                           },
                           child: Text(
                             'Go to reviews',
                             style: TextStyle(
                               decoration: TextDecoration.underline,
-                              color: Colors.blue, // Use your preferred color
+                              color: Colors.blue,
                               fontSize: 14.0,
                             ),
                           ),

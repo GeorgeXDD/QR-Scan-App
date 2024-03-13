@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/review_model.dart';
@@ -20,20 +21,57 @@ class _ReviewDetailsPageState extends State<ReviewDetailsPage> {
   String _description = '';
   double _score = 1.0;
 
-  // Assume this fetches existing review if available
   Future<Review?> _fetchReview() async {
-    // Implement fetching logic from Firestore based on widget.itemId
+    var reviewSnapshot = await FirebaseFirestore.instance
+        .collection('reviews')
+        .doc(widget.itemId)
+        .get();
+
+    if (reviewSnapshot.exists) {
+      return Review.fromMap(reviewSnapshot.data()!);
+    } else {
+      return null;
+    }
   }
 
   Future<void> _submitReview() async {
     if (_formKey.currentState!.validate()) {
-      // Implement review submission to Firestore
-      // Use widget.itemId, _title, _description, _score, widget.imageUrl, widget.itemUrl
+      var userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+      var userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('userProfile')
+          .doc(userId)
+          .get();
+      var username = userSnapshot.data()?['username'] ?? '';
+
+      final review = Review(
+        itemId: widget.itemId,
+        title: _title,
+        description: _description,
+        score: _score,
+        imageUrl: widget.imageUrl,
+        itemUrl: widget.itemUrl,
+        userId: userId,
+        username: username,
+      );
+
+      await FirebaseFirestore.instance
+          .collection('reviews')
+          .doc(widget.itemId)
+          .set(review.toMap());
+
+      Navigator.pop(context);
     }
   }
 
   Future<void> _deleteReview() async {
-    // Implement review deletion logic from Firestore based on widget.itemId
+    await FirebaseFirestore.instance
+        .collection('reviews')
+        .doc(widget.itemId)
+        .delete();
+
+    Navigator.pop(context);
   }
 
   @override
@@ -65,7 +103,7 @@ class _ReviewDetailsPageState extends State<ReviewDetailsPage> {
                 value: _score,
                 min: 1.0,
                 max: 5.0,
-                divisions: 4,
+                divisions: 8,
                 label: _score.toString(),
                 onChanged: (double value) => setState(() => _score = value),
               ),

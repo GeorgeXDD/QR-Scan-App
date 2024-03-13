@@ -165,7 +165,7 @@ class _ScanPageState extends State<ScanPage> {
                   'Go to reviews',
                   style: TextStyle(
                     decoration: TextDecoration.underline,
-                    color: Colors.blue, // Use your preferred color
+                    color: Colors.blue,
                     fontSize: 16.0,
                   ),
                   textAlign: TextAlign.center,
