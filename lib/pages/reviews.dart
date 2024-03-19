@@ -12,6 +12,27 @@ class ReviewsPage extends StatefulWidget {
 
 class _ReviewsPageState extends State<ReviewsPage> {
   final ReviewService _reviewService = ReviewService();
+  Color _scoreColor(double? score) {
+    if (score == null) return Colors.grey;
+    if (score < 3) return Colors.deepOrangeAccent;
+    if (score < 4) return Colors.yellowAccent;
+    return Colors.greenAccent;
+  }
+
+  Widget _buildScoreDots(double? score) {
+    Color color = _scoreColor(score);
+    return Row(
+      children: List.generate(5, (index) {
+        return Icon(
+          Icons.circle,
+          size: 10,
+          color: index < (score?.floor() ?? 0) ? color : Colors.grey,
+        );
+      }),
+      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,35 +91,43 @@ class _ReviewsPageState extends State<ReviewsPage> {
                                       color: Colors.black),
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                                Text(
-                                  'Score: ${product.score}',
-                                  style: TextStyle(
-                                      fontSize: 16, color: Colors.grey[600]),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4.0),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        'Score: ${product.score?.toStringAsFixed(1) ?? 'N/A'} (${product.reviewCount} reviews)',
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.grey[600]),
+                                      ),
+                                      SizedBox(width: 8),
+                                      _buildScoreDots(product.score),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
                           ),
                         ],
                       ),
-                      ButtonBar(
-                        alignment: MainAxisAlignment.start,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           TextButton(
-                            onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => ReviewDetailsPage(
-                                  itemId: product.itemId!,
-                                  title: product.title!,
-                                  imageUrl: product.imageUrl!,
-                                  itemWebUrl: product.itemWebUrl!,
-                                ),
-                              ));
-                            },
+                            onPressed: () => _showReviewDetailsDialog(
+                              context,
+                              product.itemId!,
+                              product.title!,
+                              product.imageUrl!,
+                              product.itemWebUrl!,
+                            ),
                             child: Text('See all reviews'),
                           ),
                           TextButton(
-                            onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(
+                            onPressed: () async {
+                              await Navigator.of(context)
+                                  .push(MaterialPageRoute(
                                 builder: (context) => LeaveReviewPage(
                                   itemId: product.itemId!,
                                   itemTitle: product.title!,
@@ -106,6 +135,8 @@ class _ReviewsPageState extends State<ReviewsPage> {
                                   itemWebUrl: product.itemWebUrl!,
                                 ),
                               ));
+
+                              setState(() {});
                             },
                             child: Text('Add a review'),
                           ),
@@ -121,4 +152,47 @@ class _ReviewsPageState extends State<ReviewsPage> {
       ),
     );
   }
+}
+
+void _showReviewDetailsDialog(BuildContext context, String itemId, String title,
+    String imageUrl, String itemWebUrl) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Dialog(
+        backgroundColor: Colors.white,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Item Reviews",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.close),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
+              ),
+            ),
+            Divider(),
+            Expanded(
+              child: ReviewDetailsContent(
+                itemId: itemId,
+                title: title,
+                imageUrl: imageUrl,
+                itemWebUrl: itemWebUrl,
+              ),
+            ),
+          ],
+        ),
+      );
+    },
+  );
 }

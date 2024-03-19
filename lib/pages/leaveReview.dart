@@ -94,7 +94,7 @@ class _LeaveReviewPageState extends State<LeaveReviewPage> {
                 value: _score,
                 min: 1.0,
                 max: 5.0,
-                divisions: 4,
+                divisions: 8,
                 label: _score.toString(),
                 onChanged: (value) => setState(() => _score = value),
               ),
