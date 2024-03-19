@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:qr_app/pages/reviewDetails.dart';
 
-import '../models/review_model.dart';
+import '../models/product_model_ebay.dart';
 import '../services/reviews_service.dart';
 
 class ReviewsPage extends StatefulWidget {
@@ -12,25 +13,30 @@ class _ReviewsPageState extends State<ReviewsPage> {
   final ReviewService _reviewService = ReviewService();
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFF272829),
       appBar: AppBar(
-        title: Text('Reviews',
+        title: Text('Products with Reviews',
             style: TextStyle(fontSize: 20, color: Colors.white)),
         backgroundColor: Color(0xFF272829),
       ),
-      body: StreamBuilder<List<Review>>(
-        stream: _reviewService.fetchReviews(),
+      body: StreamBuilder<List<Product>>(
+        stream: _reviewService.fetchAllProducts(),
         builder: (context, snapshot) {
           if (!snapshot.hasData)
             return Center(child: CircularProgressIndicator());
 
-          final reviews = snapshot.data!;
-          if (reviews.isEmpty) {
+          final products = snapshot.data!;
+          if (products.isEmpty) {
             return Center(
               child: Text(
-                "No reviews yet. Be the first to leave a review!",
+                "No products found.",
                 style: TextStyle(color: Colors.white, fontSize: 20),
                 textAlign: TextAlign.center,
               ),
@@ -38,21 +44,26 @@ class _ReviewsPageState extends State<ReviewsPage> {
           }
 
           return ListView.builder(
-            itemCount: reviews.length,
+            itemCount: products.length,
             itemBuilder: (context, index) {
-              final review = reviews[index];
+              final product = products[index];
               return Container(
                 margin: EdgeInsets.all(8.0),
                 color: Colors.grey[850],
                 child: ListTile(
-                  leading: Image.network(review.imageUrl,
+                  leading: Image.network(product.imageUrl ?? '',
                       width: 100, height: 100, fit: BoxFit.cover),
-                  title:
-                      Text(review.title, style: TextStyle(color: Colors.white)),
-                  subtitle: Text('Score: ${review.score}',
-                      style: TextStyle(color: Colors.white70)),
+                  title: Text(product.title ?? 'No Title',
+                      style: TextStyle(color: Colors.white)),
                   onTap: () {
-                    // Implement navigation to review details
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => ReviewDetailsPage(
+                        itemId: product.itemId!,
+                        title: product.title!,
+                        imageUrl: product.imageUrl!,
+                        itemWebUrl: product.itemWebUrl!,
+                      ),
+                    ));
                   },
                 ),
               );

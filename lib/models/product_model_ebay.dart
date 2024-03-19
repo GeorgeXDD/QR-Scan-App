@@ -6,16 +6,17 @@ class Product {
   String? priceValue;
   String? currency;
   bool isFavorited;
+  String? score;
 
-  Product({
-    this.itemId,
-    this.title,
-    this.imageUrl,
-    this.itemWebUrl,
-    this.priceValue,
-    this.currency,
-    this.isFavorited = false,
-  });
+  Product(
+      {this.itemId,
+      this.title,
+      this.imageUrl,
+      this.itemWebUrl,
+      this.priceValue,
+      this.currency,
+      this.isFavorited = false,
+      this.score});
 
   factory Product.fromJson(Map<String, dynamic> json) {
     var image = json['image'] ?? {};
@@ -41,6 +42,15 @@ class Product {
       currency: json['currency'] as String?,
       isFavorited: json['isFavorited'] as bool? ?? false,
     );
+  }
+
+  factory Product.fromFirestoreReview(Map<String, dynamic> firestoreData) {
+    return Product(
+        itemId: firestoreData['itemId'] as String?,
+        title: firestoreData['title'] as String?,
+        imageUrl: firestoreData['imageUrl'] as String?,
+        itemWebUrl: firestoreData['itemWebUrl'] as String?,
+        score: firestoreData['score'] as String?);
   }
 
   Map<String, dynamic> toMap() {

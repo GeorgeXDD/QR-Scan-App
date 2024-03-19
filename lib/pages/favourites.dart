@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:qr_app/pages/reviewDetails.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/product_model_ebay.dart';
 
@@ -86,13 +87,20 @@ class _FavouritesPageState extends State<FavouritesPage> {
                       ),
                       InkWell(
                         onTap: () {
-                          // Implement your navigation or action to go to the reviews here
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => ReviewDetailsPage(
+                              itemId: product.itemId!,
+                              title: product.title!,
+                              imageUrl: product.imageUrl!,
+                              itemWebUrl: product.itemWebUrl!,
+                            ),
+                          ));
                         },
                         child: Text(
                           'Go to reviews',
                           style: TextStyle(
                             decoration: TextDecoration.underline,
-                            color: Colors.blue, // Use your preferred color
+                            color: Colors.blue,
                             fontSize: 14.0,
                           ),
                         ),

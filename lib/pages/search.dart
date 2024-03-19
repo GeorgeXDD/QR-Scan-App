@@ -229,8 +229,9 @@ class _SearchPageState extends State<SearchPage> {
                             Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => ReviewDetailsPage(
                                 itemId: product.itemId!,
+                                title: product.title!,
                                 imageUrl: product.imageUrl!,
-                                itemUrl: product.itemWebUrl!,
+                                itemWebUrl: product.itemWebUrl!,
                               ),
                             ));
                           },

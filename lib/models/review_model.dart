@@ -6,7 +6,7 @@ class Review {
   String description;
   double score;
   String imageUrl;
-  String itemUrl;
+  String itemWebUrl;
   String userId;
   String username;
 
@@ -16,7 +16,7 @@ class Review {
     required this.description,
     required this.score,
     required this.imageUrl,
-    required this.itemUrl,
+    required this.itemWebUrl,
     required this.userId,
     required this.username,
   });
@@ -28,7 +28,7 @@ class Review {
       'description': description,
       'score': score,
       'imageUrl': imageUrl,
-      'itemUrl': itemUrl,
+      'itemWebUrl': itemWebUrl,
       'userId': userId,
       'username': username,
     };
@@ -41,7 +41,7 @@ class Review {
       description: map['description'],
       score: map['score'].toDouble(),
       imageUrl: map['imageUrl'],
-      itemUrl: map['itemUrl'],
+      itemWebUrl: map['itemWebUrl'],
       userId: map['userId'],
       username: map['username'],
     );
@@ -55,7 +55,7 @@ class Review {
       description: data['description'] ?? '',
       score: data['score'].toDouble(),
       imageUrl: data['imageUrl'] ?? '',
-      itemUrl: data['itemUrl'] ?? '',
+      itemWebUrl: data['itemWebUrl'] ?? '',
       userId: data['userId'] ?? '',
       username: data['username'] ?? '',
     );
