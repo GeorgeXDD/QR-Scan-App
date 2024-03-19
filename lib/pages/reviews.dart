@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:qr_app/pages/leaveReview.dart';
 import 'package:qr_app/pages/reviewDetails.dart';
 
 import '../models/product_model_ebay.dart';
@@ -11,11 +12,6 @@ class ReviewsPage extends StatefulWidget {
 
 class _ReviewsPageState extends State<ReviewsPage> {
   final ReviewService _reviewService = ReviewService();
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,11 +31,9 @@ class _ReviewsPageState extends State<ReviewsPage> {
           final products = snapshot.data!;
           if (products.isEmpty) {
             return Center(
-              child: Text(
-                "No products found.",
-                style: TextStyle(color: Colors.white, fontSize: 20),
-                textAlign: TextAlign.center,
-              ),
+              child: Text("No products found.",
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                  textAlign: TextAlign.center),
             );
           }
 
@@ -47,24 +41,78 @@ class _ReviewsPageState extends State<ReviewsPage> {
             itemCount: products.length,
             itemBuilder: (context, index) {
               final product = products[index];
-              return Container(
+              return Card(
                 margin: EdgeInsets.all(8.0),
-                color: Colors.grey[850],
-                child: ListTile(
-                  leading: Image.network(product.imageUrl ?? '',
-                      width: 100, height: 100, fit: BoxFit.cover),
-                  title: Text(product.title ?? 'No Title',
-                      style: TextStyle(color: Colors.white)),
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => ReviewDetailsPage(
-                        itemId: product.itemId!,
-                        title: product.title!,
-                        imageUrl: product.imageUrl!,
-                        itemWebUrl: product.itemWebUrl!,
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Image.network(
+                            product.imageUrl ??
+                                'https://via.placeholder.com/150',
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                          ),
+                          SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  product.title ?? 'No Title',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                Text(
+                                  'Score: ${product.score}',
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.grey[600]),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ));
-                  },
+                      ButtonBar(
+                        alignment: MainAxisAlignment.start,
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => ReviewDetailsPage(
+                                  itemId: product.itemId!,
+                                  title: product.title!,
+                                  imageUrl: product.imageUrl!,
+                                  itemWebUrl: product.itemWebUrl!,
+                                ),
+                              ));
+                            },
+                            child: Text('See all reviews'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => LeaveReviewPage(
+                                  itemId: product.itemId!,
+                                  itemTitle: product.title!,
+                                  imageUrl: product.imageUrl!,
+                                  itemWebUrl: product.itemWebUrl!,
+                                ),
+                              ));
+                            },
+                            child: Text('Add a review'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               );
             },

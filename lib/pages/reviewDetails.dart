@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:qr_app/pages/leaveReview.dart';
@@ -21,30 +20,81 @@ class ReviewDetailsPage extends StatefulWidget {
 }
 
 class _ReviewDetailsPageState extends State<ReviewDetailsPage> {
-  final _formKey = GlobalKey<FormState>();
-  String _title = '';
-  String _description = '';
-  double _score = 1.0;
-  String? _currentReviewId;
-  bool _noReviewsYet = true;
-
   @override
-  void initState() {
-    super.initState();
-    _checkForReviews();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Review Details'),
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
+      ),
+      body: FutureBuilder<List<Review>>(
+        future: _fetchReviews(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(
+              child: ElevatedButton(
+                onPressed: _navigateToLeaveReview,
+                child: Text('Leave the First Review'),
+              ),
+            );
+          }
+
+          List<Review> reviews = snapshot.data!;
+
+          return ListView.builder(
+            itemCount: reviews.length,
+            itemBuilder: (context, index) {
+              Review review = reviews[index];
+              return ListTile(
+                title: Text(review.title,
+                    style:
+                        TextStyle(color: const Color.fromARGB(255, 0, 0, 0))),
+                subtitle: Text('Score: ${review.score}',
+                    style:
+                        TextStyle(color: const Color.fromARGB(179, 0, 0, 0))),
+                isThreeLine: true,
+                trailing: IconButton(
+                  icon: Icon(Icons.edit),
+                  onPressed: () {
+                    // Add logic to edit review if necessary
+                  },
+                ),
+              );
+            },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _navigateToLeaveReview,
+        child: Icon(Icons.add),
+        tooltip: 'Add Review',
+      ),
+    );
   }
 
-  Future<void> _checkForReviews() async {
-    final reviewsSnapshot = await FirebaseFirestore.instance
-        .collection('product')
-        .doc(widget.itemId)
-        .collection('reviews')
-        .limit(1)
-        .get();
+  Future<List<Review>> _fetchReviews() async {
+    List<Review> reviews = [];
+    try {
+      final QuerySnapshot reviewSnapshot = await FirebaseFirestore.instance
+          .collection('product')
+          .doc(widget.itemId)
+          .collection('reviews')
+          .get();
 
-    setState(() {
-      _noReviewsYet = reviewsSnapshot.docs.isEmpty;
-    });
+      reviews = reviewSnapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        return Review.fromMap({
+          ...data,
+          'id': doc.id,
+        });
+      }).toList();
+    } catch (e) {
+      print("Error fetching reviews: $e");
+    }
+    return reviews;
   }
 
   void _navigateToLeaveReview() {
@@ -57,131 +107,6 @@ class _ReviewDetailsPageState extends State<ReviewDetailsPage> {
           imageUrl: widget.imageUrl,
           itemWebUrl: widget.itemWebUrl,
         ),
-      ),
-    );
-  }
-
-  Future<Review?> _fetchReview() async {
-    var reviewSnapshot = await FirebaseFirestore.instance
-        .collection('reviews')
-        .doc(widget.itemId)
-        .get();
-
-    if (reviewSnapshot.exists) {
-      return Review.fromMap(reviewSnapshot.data()!);
-    } else {
-      return null;
-    }
-  }
-
-  Future<void> _submitReview() async {
-    if (_formKey.currentState!.validate()) {
-      final userId = FirebaseAuth.instance.currentUser?.uid ?? '';
-      final username =
-          FirebaseAuth.instance.currentUser?.displayName ?? 'Anonymous';
-
-      final review = Review(
-        itemId: widget.itemId,
-        title: _title,
-        description: _description,
-        score: _score,
-        imageUrl: widget.imageUrl,
-        itemWebUrl: widget.itemWebUrl,
-        userId: userId,
-        username: username,
-      );
-
-      final productRef =
-          FirebaseFirestore.instance.collection('product').doc(widget.itemId);
-
-      DocumentReference reviewRef =
-          await productRef.collection('reviews').add(review.toMap());
-
-      _currentReviewId = reviewRef.id;
-      Navigator.pop(context);
-    }
-  }
-
-  Future<void> _deleteReview(String reviewId) async {
-    await FirebaseFirestore.instance
-        .collection('product')
-        .doc(widget.itemId)
-        .collection('reviews')
-        .doc(reviewId)
-        .delete();
-
-    Navigator.pop(context);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Review Details'),
-        backgroundColor: Color(0xFF272829),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: _noReviewsYet
-            ? Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => LeaveReviewPage(
-                          itemId: widget.itemId,
-                          itemTitle: widget.title,
-                          imageUrl: widget.imageUrl,
-                          itemWebUrl: widget.itemWebUrl,
-                        ),
-                      ),
-                    );
-                  },
-                  child: Text('Leave the First Review'),
-                ),
-              )
-            : Form(
-                key: _formKey,
-                child: ListView(
-                  children: [
-                    TextFormField(
-                      decoration: InputDecoration(labelText: 'Review Title'),
-                      validator: (value) =>
-                          value!.isEmpty ? 'Please enter a title' : null,
-                      onChanged: (value) => setState(() => _title = value),
-                    ),
-                    TextFormField(
-                      decoration:
-                          InputDecoration(labelText: 'Review Description'),
-                      validator: (value) =>
-                          value!.isEmpty ? 'Please enter a description' : null,
-                      onChanged: (value) =>
-                          setState(() => _description = value),
-                    ),
-                    Slider(
-                      value: _score,
-                      min: 1.0,
-                      max: 5.0,
-                      divisions: 8,
-                      label: _score.toString(),
-                      onChanged: (double value) =>
-                          setState(() => _score = value),
-                    ),
-                    ElevatedButton(
-                      onPressed: _submitReview,
-                      child: Text('Submit Review'),
-                    ),
-                    ElevatedButton(
-                      onPressed: _currentReviewId != null
-                          ? () => _deleteReview(_currentReviewId!)
-                          : null,
-                      child: Text('Delete Review'),
-                      style: ElevatedButton.styleFrom(primary: Colors.red),
-                    ),
-                  ],
-                ),
-              ),
       ),
     );
   }
