@@ -63,6 +63,13 @@ class ReviewDetailsContent extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                               color: Colors.black),
                         ),
+                        SizedBox(height: 4),
+                        Text(
+                          "By: ${review.username}",
+                          style: TextStyle(
+                              fontSize: 14,
+                              color: const Color.fromARGB(255, 0, 0, 0)),
+                        ),
                         SizedBox(height: 8),
                         Text(
                           review.description,

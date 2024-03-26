@@ -151,6 +151,50 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
+  void _showReviewDetailsDialog(BuildContext context, String itemId,
+      String title, String imageUrl, String itemWebUrl) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.white,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Item Reviews",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.close),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ],
+                ),
+              ),
+              Divider(),
+              Expanded(
+                child: ReviewDetailsContent(
+                  itemId: itemId,
+                  title: title,
+                  imageUrl: imageUrl,
+                  itemWebUrl: itemWebUrl,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildSearchHistoryList() {
     return ListView.separated(
       itemCount: searchHistory.length,
@@ -224,24 +268,16 @@ class _SearchPageState extends State<SearchPage> {
                           'Price: ${product.priceValue ?? "0"} ${product.currency ?? ""}',
                           style: TextStyle(fontSize: 16.0),
                         ),
-                        InkWell(
-                          onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => ReviewDetailsPage(
-                                itemId: product.itemId!,
-                                title: product.title!,
-                                imageUrl: product.imageUrl!,
-                                itemWebUrl: product.itemWebUrl!,
-                              ),
-                            ));
-                          },
+                        TextButton(
+                          onPressed: () => _showReviewDetailsDialog(
+                            context,
+                            product.itemId!,
+                            product.title!,
+                            product.imageUrl!,
+                            product.itemWebUrl!,
+                          ),
                           child: Text(
-                            'Go to reviews',
-                            style: TextStyle(
-                              decoration: TextDecoration.underline,
-                              color: Colors.blue,
-                              fontSize: 14.0,
-                            ),
+                            'Show reviews',
                           ),
                         ),
                       ],

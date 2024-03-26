@@ -8,6 +8,7 @@ import 'package:qr_app/services/ebay_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../models/product_model_ebay.dart';
+import 'reviewDetails.dart';
 
 class ScanPage extends StatefulWidget {
   @override
@@ -81,6 +82,50 @@ class _ScanPageState extends State<ScanPage> {
         }
       });
     }
+  }
+
+  void _showReviewDetailsDialog(BuildContext context, String itemId,
+      String title, String imageUrl, String itemWebUrl) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.white,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Item Reviews",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.close),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ],
+                ),
+              ),
+              Divider(),
+              Expanded(
+                child: ReviewDetailsContent(
+                  itemId: itemId,
+                  title: title,
+                  imageUrl: imageUrl,
+                  itemWebUrl: itemWebUrl,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildItemCard(Product product, {bool isFirst = false}) {
@@ -157,18 +202,16 @@ class _ScanPageState extends State<ScanPage> {
                 style: TextStyle(fontSize: 18.0),
                 textAlign: TextAlign.center,
               ),
-              InkWell(
-                onTap: () {
-                  // Implement your navigation or action to go to the reviews here
-                },
+              TextButton(
+                onPressed: () => _showReviewDetailsDialog(
+                  context,
+                  product.itemId!,
+                  product.title!,
+                  product.imageUrl!,
+                  product.itemWebUrl!,
+                ),
                 child: Text(
-                  'Go to reviews',
-                  style: TextStyle(
-                    decoration: TextDecoration.underline,
-                    color: Colors.blue,
-                    fontSize: 16.0,
-                  ),
-                  textAlign: TextAlign.center,
+                  'Show reviews',
                 ),
               ),
               SizedBox(height: 20),
@@ -205,17 +248,16 @@ class _ScanPageState extends State<ScanPage> {
                         'Price: ${product.priceValue ?? "0"} ${product.currency ?? ""}',
                         overflow: TextOverflow.ellipsis,
                       ),
-                      InkWell(
-                        onTap: () {
-                          // Implement your navigation or action to go to the reviews here
-                        },
+                      TextButton(
+                        onPressed: () => _showReviewDetailsDialog(
+                          context,
+                          product.itemId!,
+                          product.title!,
+                          product.imageUrl!,
+                          product.itemWebUrl!,
+                        ),
                         child: Text(
-                          'Go to reviews',
-                          style: TextStyle(
-                            decoration: TextDecoration.underline,
-                            color: Colors.blue, // Use your preferred color
-                            fontSize: 14.0,
-                          ),
+                          'Show reviews',
                         ),
                       ),
                     ],
@@ -263,9 +305,13 @@ class _ScanPageState extends State<ScanPage> {
           : Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text("Below are the results of your search",
-                      style: TextStyle(fontSize: 20, color: Colors.white)),
+                  padding: const EdgeInsets.only(
+                      top: 32.0, left: 8.0, right: 8.0, bottom: 8.0),
+                  child: Text("Search Results",
+                      style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold)),
                 ),
                 Expanded(
                   child: ListView.builder(
