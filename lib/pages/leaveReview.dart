@@ -3,18 +3,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/review_model.dart';
 
-void showLeaveReviewDialog(BuildContext context,
+Future<void> showLeaveReviewDialog(BuildContext context,
     {required String itemId,
     required String itemTitle,
     required String imageUrl,
     required String itemWebUrl}) {
-  showDialog(
+  return showDialog<void>(
     context: context,
     builder: (BuildContext context) {
       return Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        elevation: 0,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Color(0xFF272829),
         child: LeaveReviewPage(
           itemId: itemId,
           itemTitle: itemTitle,
@@ -111,76 +110,106 @@ class _LeaveReviewPageState extends State<LeaveReviewPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: <Widget>[
-              Text(
-                "Let others know your opinion!",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 20),
-              Text(
-                "How was the quality of the item?",
-                style: TextStyle(fontSize: 18),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 10),
-              Slider(
-                value: _score,
-                min: 1.0,
-                max: 5.0,
-                divisions: 8,
-                label: _score.round().toString(),
-                onChanged: (double value) {
-                  setState(() {
-                    _score = value;
-                  });
-                },
-              ),
-              Text(
-                'Rating: ${_score.toStringAsFixed(1)}',
-                style: TextStyle(fontSize: 16),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 10),
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Give a title to your review!',
-                  border: OutlineInputBorder(),
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        color: Color(0xFF272829),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              children: <Widget>[
+                Text(
+                  "Share your thoughts!",
+                  style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                  textAlign: TextAlign.center,
                 ),
-                onChanged: (value) => _title = value,
-              ),
-              SizedBox(height: 10),
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Leave a review description!',
-                  border: OutlineInputBorder(),
+                SizedBox(height: 20),
+                Text(
+                  "How would you rate this product?",
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                  textAlign: TextAlign.center,
                 ),
-                maxLines: 3,
-                onChanged: (value) => _description = value,
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  padding: EdgeInsets.symmetric(vertical: 15),
+                SizedBox(height: 10),
+                Slider(
+                  value: _score,
+                  min: 1.0,
+                  max: 5.0,
+                  divisions: 8,
+                  label: _score.round().toString(),
+                  onChanged: (double value) {
+                    setState(() {
+                      _score = value;
+                    });
+                  },
                 ),
-                onPressed: _submitReview,
-                child: Text(
-                  'Submit Review',
+                Text(
+                  'Rating: ${_score.toStringAsFixed(1)}',
+                  style: TextStyle(fontSize: 16, color: Colors.white),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 10),
+                TextFormField(
                   style: TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    labelText: 'Give a title to your review!',
+                    labelStyle: TextStyle(color: Colors.white),
+                    border: OutlineInputBorder(),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                  ),
+                  onChanged: (value) => _title = value,
                 ),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text('Maybe later'),
-              ),
-            ],
+                SizedBox(height: 10),
+                TextFormField(
+                  style: TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    labelText: 'Leave a review description!',
+                    labelStyle: TextStyle(color: Colors.white),
+                    border: OutlineInputBorder(),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                  ),
+                  maxLines: 3,
+                  onChanged: (value) => _description = value,
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                  ),
+                  onPressed: _submitReview,
+                  child: Text(
+                    'Submit Review',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  style: TextButton.styleFrom(
+                    primary: Colors.white,
+                  ),
+                  child: Text('Maybe later'),
+                ),
+              ],
+            ),
           ),
         ),
       ),

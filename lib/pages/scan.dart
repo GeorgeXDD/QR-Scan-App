@@ -90,7 +90,7 @@ class _ScanPageState extends State<ScanPage> {
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          backgroundColor: Colors.white,
+          backgroundColor: Color(0xFF272829),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -100,13 +100,15 @@ class _ScanPageState extends State<ScanPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "Item Reviews",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      "Product Reviews",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,
                     ),
                     IconButton(
-                      icon: Icon(Icons.close),
+                      icon: Icon(Icons.close, color: Colors.grey),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                   ],
@@ -131,7 +133,6 @@ class _ScanPageState extends State<ScanPage> {
   Widget _buildItemCard(Product product, {bool isFirst = false}) {
     Widget itemImage = Image.network(
       product.imageUrl ?? 'https://via.placeholder.com/150',
-      fit: BoxFit.cover,
       width: isFirst ? 200.0 : 100.0,
       height: isFirst ? 200.0 : 100.0,
     );

@@ -48,44 +48,60 @@ class ReviewDetailsContent extends StatelessWidget {
             itemCount: reviews.length,
             itemBuilder: (context, index) {
               Review review = reviews[index];
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          review.title,
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black),
+              return Container(
+                margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.white, width: 1),
+                  borderRadius: BorderRadius.circular(6.0),
+                  color: Color.fromARGB(255, 219, 219, 219),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              review.title,
+                              style: TextStyle(
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF302C34)),
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            SizedBox(height: 4.0),
+                            Text(
+                              review.description,
+                              style: TextStyle(
+                                  fontSize: 15.0, color: Color(0xFF302C34)),
+                              maxLines: 20,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            SizedBox(height: 4.0),
+                            Text(
+                              'Score: ${review.score.toString()}',
+                              style: TextStyle(
+                                  fontSize: 15.0, color: Color(0xFF302C34)),
+                            ),
+                            Align(
+                              alignment: Alignment.bottomRight,
+                              child: Text(
+                                "by: ${review.username}",
+                                style: TextStyle(
+                                    fontSize: 14.0, color: Color(0xFF302C34)),
+                                textAlign: TextAlign.right,
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 4),
-                        Text(
-                          "By: ${review.username}",
-                          style: TextStyle(
-                              fontSize: 14,
-                              color: const Color.fromARGB(255, 0, 0, 0)),
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          review.description,
-                          style:
-                              TextStyle(fontSize: 14, color: Colors.grey[800]),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          'Score: ${review.score}',
-                          style: TextStyle(color: Colors.blueAccent),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  Divider(color: Colors.grey, thickness: 1),
-                ],
+                ),
               );
             },
           ),

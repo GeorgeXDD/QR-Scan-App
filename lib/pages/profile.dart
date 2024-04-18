@@ -82,23 +82,99 @@ class _ProfilePageState extends State<ProfilePage> {
       BuildContext context, String productId, String reviewId) async {
     bool? confirmDelete = await showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Confirm Deletion'),
-          content: Text('Are you sure you want to delete this review?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: Text('Delete', style: TextStyle(color: Colors.red)),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: Text('Cancel'),
-            )
-          ],
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          child: Stack(
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.only(
+                  top: 45,
+                  bottom: 20,
+                  left: 20,
+                  right: 20,
+                ),
+                margin: EdgeInsets.only(top: 45),
+                decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black,
+                        offset: Offset(0, 10),
+                        blurRadius: 10),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      "Are you sure?",
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+                    ),
+                    SizedBox(height: 15),
+                    Text(
+                      "You want to delete this review",
+                      style: TextStyle(fontSize: 14),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 22),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        ElevatedButton(
+                          onPressed: () => Navigator.of(context).pop(true),
+                          child: Text("Yes, Delete"),
+                          style: ElevatedButton.styleFrom(
+                            primary: Color(0xFF7f6cb1),
+                            onPrimary: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () => Navigator.of(context).pop(false),
+                          child: Text("No, Cancel"),
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.grey[200],
+                            onPrimary: Colors.black,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                left: 20,
+                right: 20,
+                child: CircleAvatar(
+                  backgroundColor: Color(0xFF7f6cb1),
+                  radius: 45,
+                  child: Icon(
+                    Icons.delete,
+                    color: Colors.white,
+                    size: 50,
+                  ),
+                ),
+              ),
+            ],
+          ),
         );
       },
     );
+
     if (confirmDelete == true) {
       await _deleteReview(productId, reviewId);
     }
@@ -129,31 +205,64 @@ class _ProfilePageState extends State<ProfilePage> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: Text('Edit Review'),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+              title: Text(
+                'Edit Review',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     TextField(
                       controller: titleController,
-                      decoration: InputDecoration(labelText: 'Title'),
+                      decoration: InputDecoration(
+                        labelText: 'Title',
+                        border: UnderlineInputBorder(),
+                      ),
                     ),
                     TextField(
                       controller: descriptionController,
-                      decoration: InputDecoration(labelText: 'Description'),
+                      decoration: InputDecoration(
+                        labelText: 'Description',
+                        border: UnderlineInputBorder(),
+                      ),
                       maxLines: null,
                     ),
                     SizedBox(height: 20),
-                    Text('Score: ${score.toStringAsFixed(1)}'),
-                    Slider(
-                      value: score,
-                      min: 1.0,
-                      max: 5.0,
-                      divisions: 8,
-                      label: score.toStringAsFixed(1),
-                      onChanged: (value) {
-                        setState(() => score = value);
-                      },
+                    SliderTheme(
+                      data: SliderTheme.of(context).copyWith(
+                        activeTrackColor: Colors.purple[700],
+                        inactiveTrackColor: Colors.purple[100],
+                        trackShape: RoundedRectSliderTrackShape(),
+                        trackHeight: 4.0,
+                        thumbShape:
+                            RoundSliderThumbShape(enabledThumbRadius: 12.0),
+                        thumbColor: Colors.purpleAccent,
+                        overlayColor: Colors.purple.withAlpha(32),
+                        overlayShape:
+                            RoundSliderOverlayShape(overlayRadius: 28.0),
+                        tickMarkShape: RoundSliderTickMarkShape(),
+                        activeTickMarkColor: Colors.purple[700],
+                        inactiveTickMarkColor: Colors.purple[100],
+                        valueIndicatorShape: PaddleSliderValueIndicatorShape(),
+                        valueIndicatorColor: Colors.purpleAccent,
+                        valueIndicatorTextStyle: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                      child: Slider(
+                        value: score,
+                        min: 1.0,
+                        max: 5.0,
+                        divisions: 8,
+                        label: score.toStringAsFixed(1),
+                        onChanged: (value) {
+                          setState(() => score = value);
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -170,13 +279,22 @@ class _ProfilePageState extends State<ProfilePage> {
                         review['productId'], review['docId'], updatedData);
                     Navigator.of(context).pop();
                   },
+                  style: TextButton.styleFrom(
+                    primary: Colors.red, // Use your primary color here
+                  ),
                   child: Text('Save'),
                 ),
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
+                  style: TextButton.styleFrom(
+                    primary: Colors.grey, // Use your secondary color here
+                  ),
                   child: Text('Cancel'),
                 ),
               ],
+              backgroundColor: Colors.white,
+              contentPadding: EdgeInsets.all(20),
+              buttonPadding: EdgeInsets.all(20),
             );
           },
         );

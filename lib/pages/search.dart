@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:qr_app/pages/leaveReview.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../models/product_model_ebay.dart';
@@ -157,7 +158,7 @@ class _SearchPageState extends State<SearchPage> {
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          backgroundColor: Colors.white,
+          backgroundColor: Color(0xFF272829),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -167,13 +168,15 @@ class _SearchPageState extends State<SearchPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "Item Reviews",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      "Product Reviews",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,
                     ),
                     IconButton(
-                      icon: Icon(Icons.close),
+                      icon: Icon(Icons.close, color: Colors.grey),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                   ],
@@ -244,52 +247,71 @@ class _SearchPageState extends State<SearchPage> {
             margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
             child: Padding(
               padding: EdgeInsets.all(8.0),
-              child: Row(
+              child: Column(
                 children: [
-                  Image.network(
-                    product.imageUrl ?? 'https://via.placeholder.com/150',
-                    width: 80.0,
-                    height: 80.0,
+                  Row(
+                    children: [
+                      Image.network(
+                        product.imageUrl ?? 'https://via.placeholder.com/150',
+                        width: 80.0,
+                        height: 80.0,
+                      ),
+                      SizedBox(width: 16.0),
+                      Expanded(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              product.title ?? 'Product not found',
+                              style: TextStyle(
+                                  fontSize: 18.0, fontWeight: FontWeight.bold),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              'Price: ${product.priceValue ?? "0"} ${product.currency ?? ""}',
+                              style: TextStyle(fontSize: 16.0),
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(
+                            product.isFavorited
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: Colors.red),
+                        onPressed: () => _toggleFavorite(product),
+                      ),
+                    ],
                   ),
-                  SizedBox(width: 16.0),
-                  Expanded(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          product.title ?? 'Product not found',
-                          style: TextStyle(
-                              fontSize: 18.0, fontWeight: FontWeight.bold),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      TextButton(
+                        onPressed: () => _showReviewDetailsDialog(
+                          context,
+                          product.itemId!,
+                          product.title!,
+                          product.imageUrl!,
+                          product.itemWebUrl!,
                         ),
-                        Text(
-                          'Price: ${product.priceValue ?? "0"} ${product.currency ?? ""}',
-                          style: TextStyle(fontSize: 16.0),
-                        ),
-                        TextButton(
-                          onPressed: () => _showReviewDetailsDialog(
-                            context,
-                            product.itemId!,
-                            product.title!,
-                            product.imageUrl!,
-                            product.itemWebUrl!,
-                          ),
-                          child: Text(
-                            'Show reviews',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(
-                        product.isFavorited
-                            ? Icons.favorite
-                            : Icons.favorite_border,
-                        color: Colors.red),
-                    onPressed: () => _toggleFavorite(product),
+                        child: Text('Show reviews'),
+                      ),
+                      TextButton(
+                        onPressed: () => showLeaveReviewDialog(
+                          context,
+                          itemId: product.itemId!,
+                          itemTitle: product.title!,
+                          imageUrl: product.imageUrl!,
+                          itemWebUrl: product.itemWebUrl!,
+                        ).then((_) {
+                          setState(() {});
+                        }),
+                        child: Text('Add a review'),
+                      ),
+                    ],
                   ),
                 ],
               ),
