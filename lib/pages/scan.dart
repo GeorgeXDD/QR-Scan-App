@@ -24,7 +24,9 @@ class _ScanPageState extends State<ScanPage> {
   @override
   void initState() {
     super.initState();
-    _startScan();
+    if (_scanResult == 'Scan a code') {
+      _startScan();
+    }
   }
 
   Future<void> _startScan() async {
@@ -137,30 +139,131 @@ class _ScanPageState extends State<ScanPage> {
       height: isFirst ? 200.0 : 100.0,
     );
 
-    if (isFirst) {
-      return Card(
-        child: GestureDetector(
-          onTap: () async {
-            if (product.itemWebUrl?.isNotEmpty ?? false) {
-              final Uri url = Uri.parse(product.itemWebUrl!);
-              if (await canLaunchUrl(url)) {
-                await launchUrl(url, mode: LaunchMode.externalApplication);
-              }
-            }
-          },
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Stack(
+    return GestureDetector(
+      onTap: () async {
+        if (product.itemWebUrl?.isNotEmpty ?? false) {
+          final Uri url = Uri.parse(product.itemWebUrl!);
+          if (await canLaunchUrl(url)) {
+            await launchUrl(url, mode: LaunchMode.externalApplication);
+          }
+        }
+      },
+      child: Card(
+        child: isFirst
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Align(
-                    alignment: Alignment.center,
-                    child: itemImage,
+                  Stack(
+                    children: [
+                      Align(
+                        alignment: Alignment.center,
+                        child: itemImage,
+                      ),
+                      Positioned(
+                        top: 0,
+                        right: 0,
+                        child: IconButton(
+                          icon: Icon(product.isFavorited
+                              ? Icons.favorite
+                              : Icons.favorite_border),
+                          color: Colors.red,
+                          onPressed: () async {
+                            final docRef = FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(userId)
+                                .collection('favorites')
+                                .doc(product.itemId);
+
+                            if (product.isFavorited) {
+                              await docRef.delete();
+                            } else {
+                              await docRef.set(product.toMap());
+                            }
+                            setState(() {
+                              product.isFavorited = !product.isFavorited;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    child: IconButton(
+                  Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    child: Text(
+                      product.title ?? 'Product not found',
+                      style: TextStyle(
+                        fontSize: 22.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.visible,
+                      maxLines: 3,
+                    ),
+                  ),
+                  Text(
+                    'Price: ${product.priceValue ?? "0"} ${product.currency ?? ""}',
+                    style: TextStyle(fontSize: 18.0),
+                    textAlign: TextAlign.center,
+                  ),
+                  TextButton(
+                    onPressed: () => _showReviewDetailsDialog(
+                      context,
+                      product.itemId!,
+                      product.title!,
+                      product.imageUrl!,
+                      product.itemWebUrl!,
+                    ),
+                    child: Text(
+                      'Show reviews',
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                ],
+              )
+            : Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    itemImage,
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 16.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              product.title ?? 'Product not found',
+                              style: TextStyle(
+                                fontSize: 15.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              overflow: TextOverflow.visible,
+                              maxLines: 2,
+                            ),
+                            Text(
+                              'Price: ${product.priceValue ?? "0"} ${product.currency ?? ""}',
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            TextButton(
+                              onPressed: () => _showReviewDetailsDialog(
+                                context,
+                                product.itemId!,
+                                product.title!,
+                                product.imageUrl!,
+                                product.itemWebUrl!,
+                              ),
+                              child: Text(
+                                'Show reviews',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    IconButton(
                       icon: Icon(product.isFavorited
                           ? Icons.favorite
                           : Icons.favorite_border),
@@ -182,116 +285,11 @@ class _ScanPageState extends State<ScanPage> {
                         });
                       },
                     ),
-                  ),
-                ],
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: Text(
-                  product.title ?? 'Product not found',
-                  style: TextStyle(
-                    fontSize: 22.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                  overflow: TextOverflow.visible,
-                  maxLines: 3,
+                  ],
                 ),
               ),
-              Text(
-                'Price: ${product.priceValue ?? "0"} ${product.currency ?? ""}',
-                style: TextStyle(fontSize: 18.0),
-                textAlign: TextAlign.center,
-              ),
-              TextButton(
-                onPressed: () => _showReviewDetailsDialog(
-                  context,
-                  product.itemId!,
-                  product.title!,
-                  product.imageUrl!,
-                  product.itemWebUrl!,
-                ),
-                child: Text(
-                  'Show reviews',
-                ),
-              ),
-              SizedBox(height: 20),
-            ],
-          ),
-        ),
-      );
-    } else {
-      return Card(
-        color: Colors.white,
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              itemImage,
-              Expanded(
-                child: Padding(
-                  padding: EdgeInsets.only(left: 16.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        product.title ?? 'Product not found',
-                        style: TextStyle(
-                          fontSize: 15.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        overflow: TextOverflow.visible,
-                        maxLines: 2,
-                      ),
-                      Text(
-                        'Price: ${product.priceValue ?? "0"} ${product.currency ?? ""}',
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      TextButton(
-                        onPressed: () => _showReviewDetailsDialog(
-                          context,
-                          product.itemId!,
-                          product.title!,
-                          product.imageUrl!,
-                          product.itemWebUrl!,
-                        ),
-                        child: Text(
-                          'Show reviews',
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              IconButton(
-                icon: Icon(product.isFavorited
-                    ? Icons.favorite
-                    : Icons.favorite_border),
-                color: Colors.red,
-                onPressed: () async {
-                  final docRef = FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(userId)
-                      .collection('favorites')
-                      .doc(product.itemId);
-
-                  if (product.isFavorited) {
-                    await docRef.delete();
-                  } else {
-                    await docRef.set(product.toMap());
-                  }
-                  setState(() {
-                    product.isFavorited = !product.isFavorited;
-                  });
-                },
-              ),
-            ],
-          ),
-        ),
-      );
-    }
+      ),
+    );
   }
 
   @override
