@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:qr_app/services/ebay_service.dart';
+import 'package:qr_app/services/scraper_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../models/product_model_ebay.dart';
@@ -56,7 +57,14 @@ class _ScanPageState extends State<ScanPage> {
             return product;
           }).toList();
 
+          // var test;
+          // if (products.first.title != null) {
+          //   test = await scrapeEMAG(products.first.title!);
+          //   setState(() => _productList = test);
+          // }
+
           setState(() => _productList = products);
+          // setState(() => _productList = test);
         } else {
           setState(() => _productList.clear());
         }
