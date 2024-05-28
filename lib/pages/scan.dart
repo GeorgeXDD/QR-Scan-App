@@ -1,9 +1,8 @@
-// ignore_for_file: prefer_const_constructors, library_private_types_in_public_api, use_key_in_widget_constructors
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:qr_app/pages/header_widget.dart';
 import 'package:qr_app/services/ebay_service.dart';
 import 'package:qr_app/services/scraper_service.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -21,14 +20,10 @@ class _ScanPageState extends State<ScanPage> {
   String _scanResult = 'Scan a code';
   List<Product> _productList = [];
   String? userId = FirebaseAuth.instance.currentUser?.uid;
-
-  @override
-  void initState() {
-    super.initState();
-    if (_scanResult == 'Scan a code') {
-      _startScan();
-    }
-  }
+  bool isScanning = false;
+  bool ebayChecked = true;
+  bool emagChecked = false;
+  bool altexChecked = false;
 
   Future<void> _startScan() async {
     try {
@@ -36,7 +31,10 @@ class _ScanPageState extends State<ScanPage> {
           '#FFFFFF', 'Cancel', true, ScanMode.QR);
       if (!mounted) return;
       if (url != '-1') {
-        setState(() => _scanResult = 'Fetching product information...');
+        setState(() {
+          _scanResult = 'Fetching product information...';
+          isScanning = true;
+        });
 
         var ebayService = EbayService();
         var productDataList = await ebayService.fetchProductDetails(url);
@@ -57,17 +55,26 @@ class _ScanPageState extends State<ScanPage> {
             return product;
           }).toList();
 
-          // var test;
-          // if (products.first.title != null) {
-          //   test = await scrapeEMAG(products.first.title!);
-          //   setState(() => _productList = test);
-          // }
+          if (emagChecked && products.isNotEmpty) {
+            var emagResults = await scrapeEMAG(products.first.title!);
+            products.addAll(emagResults);
+          }
+
+          // var altexResults = await scrapeALTEX('iphone 14');
+          // products.addAll(altexResults);
+          // products.clear();
+          // products = altexResults;
+
+          // print(products.first.title);
+
+          // Sort products based on price
+          products.sort((a, b) => a.priceValue!.compareTo(b.priceValue!));
 
           setState(() => _productList = products);
-          // setState(() => _productList = test);
         } else {
           setState(() => _productList.clear());
         }
+        setState(() => isScanning = false);
       } else {
         setState(() => _scanResult = 'Scan cancelled');
       }
@@ -304,40 +311,91 @@ class _ScanPageState extends State<ScanPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFF272829),
-      body: _productList.isEmpty
-          ? Center(
-              child: Text(_scanResult,
-                  style: TextStyle(color: Colors.white, fontSize: 24)),
-            )
-          : Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(
-                      top: 32.0, left: 8.0, right: 8.0, bottom: 8.0),
-                  child: Text("Search Results",
-                      style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold)),
+      body: Column(
+        children: [
+          HeaderWidget(),
+          if (!isScanning && _productList.isEmpty)
+            Expanded(
+              child: Center(
+                child: ElevatedButton(
+                  onPressed: _startScan,
+                  child: Text('Start scanning'),
                 ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: _productList.length + 1,
-                    itemBuilder: (context, index) {
-                      if (index == _productList.length) {
-                        return Center(
-                          child: ElevatedButton(
-                              onPressed: _startScan,
-                              child: Text('Scan a different code')),
-                        );
-                      }
-                      return _buildItemCard(_productList[index],
-                          isFirst: index == 0);
-                    },
-                  ),
+              ),
+            ),
+          if (_productList.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(
+                  top: 32.0, left: 8.0, right: 8.0, bottom: 8.0),
+              child: Text("Scan Results",
+                  style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold)),
+            ),
+          if (_productList.isNotEmpty)
+            Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: 30,
+                      child: ElevatedButton(
+                        onPressed: _startScan,
+                        child: Text('Retry Scan'),
+                      ),
+                    ),
+                    Checkbox(
+                      value: ebayChecked,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          ebayChecked = value!;
+                        });
+                      },
+                    ),
+                    Text("eBay", style: TextStyle(color: Colors.white)),
+                    Checkbox(
+                      value: emagChecked,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          emagChecked = value!;
+                        });
+                      },
+                    ),
+                    Text("eMAG", style: TextStyle(color: Colors.white)),
+                    Checkbox(
+                      value: altexChecked,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          altexChecked = value!;
+                        });
+                      },
+                    ),
+                    Text("Altex", style: TextStyle(color: Colors.white)),
+                  ],
                 ),
               ],
             ),
+          if (_productList.isNotEmpty)
+            Expanded(
+              child: ListView.builder(
+                itemCount: _productList.length + 1,
+                itemBuilder: (context, index) {
+                  if (index == _productList.length) {
+                    return Center(
+                      child: ElevatedButton(
+                          onPressed: _startScan,
+                          child: Text('Scan a different code')),
+                    );
+                  }
+                  return _buildItemCard(_productList[index],
+                      isFirst: index == 0);
+                },
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

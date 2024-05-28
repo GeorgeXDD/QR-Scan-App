@@ -485,6 +485,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            SizedBox(height: 10),
                             Text(username,
                                 style: TextStyle(
                                     color: Colors.white,
@@ -496,9 +497,10 @@ class _ProfilePageState extends State<ProfilePage> {
                           ],
                         ),
                         CircleAvatar(
-                            radius: 50,
-                            backgroundImage: NetworkImage(
-                                'https://via.placeholder.com/150')),
+                            radius: 40,
+                            backgroundColor: Colors.transparent,
+                            backgroundImage:
+                                AssetImage('lib/assets/logo2.png')),
                       ],
                     ),
                   ),
@@ -537,6 +539,23 @@ class _ProfilePageState extends State<ProfilePage> {
                     ],
                   ),
                   SizedBox(height: 20),
+                  Center(
+                    child: GestureDetector(
+                      onTap: () => _signOut(context),
+                      child: Container(
+                        padding: EdgeInsets.all(5),
+                        width: 100,
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.white),
+                        ),
+                        child: Text('Sign Out',
+                            style: TextStyle(color: Colors.white, fontSize: 16),
+                            textAlign: TextAlign.center),
+                      ),
+                    ),
+                  ),
                   SizedBox(height: 20),
                   Divider(color: Colors.grey, thickness: 1),
                   Center(
@@ -548,12 +567,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   _buildUserReviewsSection(),
                   SizedBox(height: 20),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(primary: Colors.red),
-                    onPressed: () => _signOut(context),
-                    child:
-                        Text('Sign Out', style: TextStyle(color: Colors.white)),
-                  ),
                 ],
               ),
             ),
