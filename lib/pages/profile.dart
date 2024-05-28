@@ -258,40 +258,53 @@ class _ProfilePageState extends State<ProfilePage> {
                           maxLines: null,
                         ),
                         SizedBox(height: 20),
-                        SliderTheme(
-                          data: SliderTheme.of(context).copyWith(
-                            activeTrackColor: Colors.purple[700],
-                            inactiveTrackColor: Colors.purple[100],
-                            trackShape: RoundedRectSliderTrackShape(),
-                            trackHeight: 4.0,
-                            thumbShape:
-                                RoundSliderThumbShape(enabledThumbRadius: 12.0),
-                            thumbColor: Colors.purpleAccent,
-                            overlayColor: Colors.purple.withAlpha(32),
-                            overlayShape:
-                                RoundSliderOverlayShape(overlayRadius: 28.0),
-                            tickMarkShape: RoundSliderTickMarkShape(),
-                            activeTickMarkColor: Colors.purple[700],
-                            inactiveTickMarkColor: Colors.purple[100],
-                            valueIndicatorShape:
-                                PaddleSliderValueIndicatorShape(),
-                            valueIndicatorColor: Colors.purpleAccent,
-                            valueIndicatorTextStyle: TextStyle(
-                              color: Colors.white,
+                        Row(
+                          children: [
+                            Text(
+                              'Score:',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
-                          ),
-                          child: Slider(
-                            value: score,
-                            min: 1.0,
-                            max: 5.0,
-                            divisions: 8,
-                            label: score.toStringAsFixed(1),
-                            onChanged: (value) {
-                              setState(() {
-                                score = value;
-                              });
-                            },
-                          ),
+                            Expanded(
+                              child: SliderTheme(
+                                data: SliderTheme.of(context).copyWith(
+                                  activeTrackColor: Colors.purple[700],
+                                  inactiveTrackColor: Colors.purple[100],
+                                  trackShape: RoundedRectSliderTrackShape(),
+                                  trackHeight: 4.0,
+                                  thumbShape: RoundSliderThumbShape(
+                                      enabledThumbRadius: 12.0),
+                                  thumbColor: Colors.purpleAccent,
+                                  overlayColor: Colors.purple.withAlpha(32),
+                                  overlayShape: RoundSliderOverlayShape(
+                                      overlayRadius: 28.0),
+                                  tickMarkShape: RoundSliderTickMarkShape(),
+                                  activeTickMarkColor: Colors.purple[700],
+                                  inactiveTickMarkColor: Colors.purple[100],
+                                  valueIndicatorShape:
+                                      PaddleSliderValueIndicatorShape(),
+                                  valueIndicatorColor: Colors.purpleAccent,
+                                  valueIndicatorTextStyle: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                child: Slider(
+                                  value: score,
+                                  min: 1.0,
+                                  max: 5.0,
+                                  divisions: 8,
+                                  label: score.toStringAsFixed(1),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      score = value;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                         SizedBox(height: 22),
                         Row(
