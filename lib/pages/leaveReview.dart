@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors, file_names, avoid_print, deprecated_member_use, use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -144,7 +146,7 @@ class _LeaveReviewPageState extends State<LeaveReviewPage> {
                   min: 1.0,
                   max: 5.0,
                   divisions: 8,
-                  label: _score.round().toString(),
+                  label: _score.toStringAsFixed(1),
                   onChanged: (double value) {
                     setState(() {
                       _score = value;

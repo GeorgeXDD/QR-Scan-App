@@ -1,3 +1,5 @@
+// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, use_build_context_synchronously, avoid_print, prefer_const_constructors, sort_child_properties_last, deprecated_member_use, prefer_const_literals_to_create_immutables
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -69,13 +71,21 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _deleteReview(String productId, String docId) async {
-    await _firestore
-        .collection('product')
-        .doc(productId)
-        .collection('reviews')
-        .doc(docId)
-        .delete();
-    setState(() {});
+    try {
+      CollectionReference reviews =
+          _firestore.collection('product').doc(productId).collection('reviews');
+
+      QuerySnapshot reviewSnapshot = await reviews.get();
+      await reviews.doc(docId).delete();
+
+      if (reviewSnapshot.docs.length <= 1) {
+        await _firestore.collection('product').doc(productId).delete();
+      }
+
+      setState(() {});
+    } catch (e) {
+      print('Error deleting review or product: $e');
+    }
   }
 
   Future<void> _showDeleteConfirmation(
@@ -276,7 +286,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   trackHeight: 4.0,
                                   thumbShape: RoundSliderThumbShape(
                                       enabledThumbRadius: 12.0),
-                                  thumbColor: Colors.purpleAccent,
+                                  thumbColor: Color.fromARGB(255, 184, 62, 206),
                                   overlayColor: Colors.purple.withAlpha(32),
                                   overlayShape: RoundSliderOverlayShape(
                                       overlayRadius: 28.0),
@@ -285,7 +295,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                   inactiveTickMarkColor: Colors.purple[100],
                                   valueIndicatorShape:
                                       PaddleSliderValueIndicatorShape(),
-                                  valueIndicatorColor: Colors.purpleAccent,
+                                  valueIndicatorColor:
+                                      Color.fromARGB(255, 184, 62, 206),
                                   valueIndicatorTextStyle: TextStyle(
                                     color: Colors.white,
                                   ),

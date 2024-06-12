@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors, library_private_types_in_public_api, unnecessary_cast
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:qr_app/pages/leaveReview.dart';
 import 'package:qr_app/pages/reviewDetails.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../models/product_model_ebay.dart';
+import '../models/product_model.dart';
 
 class FavouritesPage extends StatefulWidget {
   @override

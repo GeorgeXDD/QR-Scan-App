@@ -1,7 +1,9 @@
+// ignore_for_file: prefer_interpolation_to_compose_strings, avoid_print
+
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart';
 
-import '../models/product_model_ebay.dart';
+import '../models/product_model.dart';
 
 Future<List<Product>> scrapeEMAG(String searchKeyword) async {
   List<Product> products = [];
@@ -62,15 +64,6 @@ Future<List<Product>> scrapeEMAG(String searchKeyword) async {
     }
   } catch (e) {
     print('Error: $e');
-  }
-
-  for (var product in products) {
-    print('ItemID: ${product.itemId}');
-    print('Title: ${product.title}');
-    print('Price: ${product.priceValue} ${product.currency}');
-    print('Link: ${product.itemWebUrl}');
-    print('Image URL: ${product.imageUrl}');
-    print('-----------------------');
   }
 
   return products;

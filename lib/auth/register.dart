@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api, use_key_in_widget_constructors, prefer_const_constructors, use_build_context_synchronously, avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -298,13 +300,12 @@ class AbstractPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     Path path = Path();
-    // First triangle
+
     path.moveTo(size.width, 0);
     path.lineTo(size.width, size.height);
     path.lineTo(size.width * 0.5, size.height * 0.5);
     path.close();
 
-    // Second triangle
     path.moveTo(size.width * 0.5, size.height * 0.5);
     path.lineTo(400, size.height);
     path.lineTo(1, 2);

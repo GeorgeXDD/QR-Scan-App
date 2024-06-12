@@ -1,3 +1,5 @@
+// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, prefer_const_constructors
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +9,7 @@ import 'package:qr_app/services/ebay_service.dart';
 import 'package:qr_app/services/scraper_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../models/product_model_ebay.dart';
+import '../models/product_model.dart';
 import 'reviewDetails.dart';
 
 class ScanPage extends StatefulWidget {
@@ -343,7 +345,7 @@ class _ScanPageState extends State<ScanPage> {
                       height: 30,
                       child: ElevatedButton(
                         onPressed: _startScan,
-                        child: Text('Retry Scan'),
+                        child: Text('Scan again'),
                       ),
                     ),
                     Checkbox(

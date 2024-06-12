@@ -1,5 +1,7 @@
+// ignore_for_file: unnecessary_cast, unused_element
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../models/product_model_ebay.dart';
+import '../models/product_model.dart';
 import '../models/review_model.dart';
 
 class ReviewService {
