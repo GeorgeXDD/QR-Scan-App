@@ -2,6 +2,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:qr_app/pages/header_widget.dart';
@@ -54,27 +55,37 @@ class _ScanPageState extends State<ScanPage> {
           var products = productDataList.map((item) {
             var product = Product.fromJson(item);
             product.isFavorited = favorites.contains(product.itemId);
+            product.source = 'eBay';
             return product;
           }).toList();
 
           if (emagChecked && products.isNotEmpty) {
             var emagResults = await scrapeEMAG(products.first.title!);
+            emagResults.forEach((product) {
+              product.source = 'eMAG';
+            });
             products.addAll(emagResults);
           }
 
-          // var altexResults = await scrapeALTEX('iphone 14');
-          // products.addAll(altexResults);
-          // products.clear();
-          // products = altexResults;
+          if (altexChecked && products.isNotEmpty) {
+            var altexResults = await scrapeEMAG(products.first.title!);
+            altexResults.forEach((product) {
+              product.source = 'Altex';
+            });
+            products.addAll(altexResults);
+          }
 
-          // print(products.first.title);
-
-          // Sort products based on price
-          products.sort((a, b) => a.priceValue!.compareTo(b.priceValue!));
+          products.sort((a, b) {
+            if (a.source != b.source) {
+              return a.source == 'eBay' ? -1 : 1;
+            }
+            return a.priceValue!.compareTo(b.priceValue!);
+          });
 
           setState(() => _productList = products);
         } else {
           setState(() => _productList.clear());
+          isScanning = false;
         }
         setState(() => isScanning = false);
       } else {
@@ -82,6 +93,7 @@ class _ScanPageState extends State<ScanPage> {
       }
     } catch (e) {
       setState(() => _scanResult = 'Scan failed: $e');
+      isScanning = false;
     }
   }
 
@@ -319,13 +331,63 @@ class _ScanPageState extends State<ScanPage> {
           if (!isScanning && _productList.isEmpty)
             Expanded(
               child: Center(
-                child: ElevatedButton(
-                  onPressed: _startScan,
-                  child: Text('Start scanning'),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: _startScan,
+                      child: Text('Start scanning'),
+                    ),
+                    SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Checkbox(
+                          value: ebayChecked,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              ebayChecked = value!;
+                            });
+                          },
+                        ),
+                        Text("eBay", style: TextStyle(color: Colors.white)),
+                        Checkbox(
+                          value: emagChecked,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              emagChecked = value!;
+                            });
+                          },
+                        ),
+                        Text("eMAG", style: TextStyle(color: Colors.white)),
+                        Checkbox(
+                          value: altexChecked,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              altexChecked = value!;
+                            });
+                          },
+                        ),
+                        Text("Altex", style: TextStyle(color: Colors.white)),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ),
-          if (_productList.isNotEmpty)
+          if (isScanning)
+            Padding(
+              padding: const EdgeInsets.only(
+                  top: 232.0, left: 8.0, right: 8.0, bottom: 8.0),
+              child: Text(
+                'Fetching product data...',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+          if (_productList.isNotEmpty && !isScanning)
             Padding(
               padding: const EdgeInsets.only(
                   top: 32.0, left: 8.0, right: 8.0, bottom: 8.0),
@@ -335,7 +397,7 @@ class _ScanPageState extends State<ScanPage> {
                       color: Colors.white,
                       fontWeight: FontWeight.bold)),
             ),
-          if (_productList.isNotEmpty)
+          if (_productList.isNotEmpty && !isScanning)
             Column(
               children: [
                 Row(
@@ -379,7 +441,7 @@ class _ScanPageState extends State<ScanPage> {
                 ),
               ],
             ),
-          if (_productList.isNotEmpty)
+          if (_productList.isNotEmpty && !isScanning)
             Expanded(
               child: ListView.builder(
                 itemCount: _productList.length + 1,

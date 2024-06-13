@@ -5,6 +5,7 @@ class Product {
   String? itemWebUrl;
   String? priceValue;
   String? currency;
+  String? source;
   bool isFavorited;
   double? score;
   int? reviewCount;

@@ -27,9 +27,8 @@ Future<List<Product>> scrapeEMAG(String searchKeyword) async {
         var priceText = priceElement?.text.trim().replaceAll(RegExp(r'\D'), '');
 
         String? price = priceText;
-        print('Price = ' + price!);
 
-        if (price.isNotEmpty) {
+        if (price!.isNotEmpty) {
           try {
             price = price.substring(0, price.length - 2) +
                 '.' +

@@ -160,7 +160,7 @@ class _RegisterPageState extends State<RegisterPage> {
         return Text(
           "Let us know you!",
           style: TextStyle(
-            color: Colors.blue,
+            color: Color.fromARGB(255, 144, 123, 198),
             decoration: TextDecoration.underline,
           ),
         );
@@ -168,7 +168,7 @@ class _RegisterPageState extends State<RegisterPage> {
         return Text(
           "Pick a name that will be visible to all users!",
           style: TextStyle(
-            color: Colors.blue,
+            color: Color.fromARGB(255, 144, 123, 198),
             decoration: TextDecoration.underline,
           ),
         );
@@ -176,7 +176,7 @@ class _RegisterPageState extends State<RegisterPage> {
         return Text(
           "Describe yourself as you feel!",
           style: TextStyle(
-            color: Colors.blue,
+            color: Color.fromARGB(255, 144, 123, 198),
             decoration: TextDecoration.underline,
           ),
         );

@@ -1,5 +1,3 @@
-// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:qr_app/auth/register.dart';
 import 'package:qr_app/main.dart';
@@ -110,18 +108,32 @@ class LoginPage extends StatelessWidget {
                       child: ElevatedButton(
                         child: Text('Login'),
                         onPressed: () async {
-                          bool loggedIn = await _authController.handleSignIn(
+                          String? validationMessage = _validateLogin(
                             _emailController.text,
                             _passwordController.text,
                           );
-                          if (loggedIn) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => MainPage()),
+                          if (validationMessage != null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(validationMessage)),
                             );
                           } else {
-                            // Handle login failure
+                            bool loggedIn = await _authController.handleSignIn(
+                              _emailController.text,
+                              _passwordController.text,
+                            );
+                            if (loggedIn) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => MainPage()),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: Text(
+                                        'Login failed. Please check your email and password.')),
+                              );
+                            }
                           }
                         },
                       ),
@@ -152,6 +164,16 @@ class LoginPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String? _validateLogin(String email, String password) {
+    if (!email.contains('@')) {
+      return "Email must contain '@'.";
+    }
+    if (password.isEmpty) {
+      return "Password cannot be empty.";
+    }
+    return null;
   }
 }
 

@@ -22,6 +22,110 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  Future<void> _showSignOutConfirmation(BuildContext context) async {
+    bool? confirmSignOut = await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          child: Stack(
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.only(
+                  top: 45,
+                  bottom: 20,
+                  left: 20,
+                  right: 20,
+                ),
+                margin: EdgeInsets.only(top: 45),
+                decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black,
+                        offset: Offset(0, 10),
+                        blurRadius: 10),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      "Sign Out",
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+                    ),
+                    SizedBox(height: 15),
+                    Text(
+                      "Are you sure you want to sign out?",
+                      style: TextStyle(fontSize: 14),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 22),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(true);
+                            _signOut(context);
+                          },
+                          child: Text("Yes"),
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.red[400],
+                            onPrimary: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () => Navigator.of(context).pop(false),
+                          child: Text("No"),
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.grey[200],
+                            onPrimary: Colors.black,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Positioned(
+                left: 20,
+                right: 20,
+                child: CircleAvatar(
+                  backgroundColor: Colors.red[400],
+                  radius: 45,
+                  child: Icon(
+                    Icons.logout,
+                    color: Colors.white,
+                    size: 50,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (confirmSignOut == true) {
+      await _signOut(context);
+    }
+  }
+
   Future<Map<String, dynamic>> _fetchUserData() async {
     String? userId = _auth.currentUser?.uid;
     if (userId == null) return {};
@@ -565,7 +669,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   SizedBox(height: 20),
                   Center(
                     child: GestureDetector(
-                      onTap: () => _signOut(context),
+                      onTap: () => _showSignOutConfirmation(context),
                       child: Container(
                         padding: EdgeInsets.all(5),
                         width: 100,
