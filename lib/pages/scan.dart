@@ -26,7 +26,6 @@ class _ScanPageState extends State<ScanPage> {
   bool isScanning = false;
   bool ebayChecked = true;
   bool emagChecked = false;
-  bool altexChecked = false;
 
   Future<void> _startScan() async {
     try {
@@ -64,15 +63,10 @@ class _ScanPageState extends State<ScanPage> {
             emagResults.forEach((product) {
               product.source = 'eMAG';
             });
+            if (!ebayChecked) {
+              products.clear();
+            }
             products.addAll(emagResults);
-          }
-
-          if (altexChecked && products.isNotEmpty) {
-            var altexResults = await scrapeEMAG(products.first.title!);
-            altexResults.forEach((product) {
-              product.source = 'Altex';
-            });
-            products.addAll(altexResults);
           }
 
           products.sort((a, b) {
@@ -360,15 +354,6 @@ class _ScanPageState extends State<ScanPage> {
                           },
                         ),
                         Text("eMAG", style: TextStyle(color: Colors.white)),
-                        Checkbox(
-                          value: altexChecked,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              altexChecked = value!;
-                            });
-                          },
-                        ),
-                        Text("Altex", style: TextStyle(color: Colors.white)),
                       ],
                     ),
                   ],
@@ -428,15 +413,6 @@ class _ScanPageState extends State<ScanPage> {
                       },
                     ),
                     Text("eMAG", style: TextStyle(color: Colors.white)),
-                    Checkbox(
-                      value: altexChecked,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          altexChecked = value!;
-                        });
-                      },
-                    ),
-                    Text("Altex", style: TextStyle(color: Colors.white)),
                   ],
                 ),
               ],
