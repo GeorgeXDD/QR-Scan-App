@@ -61,6 +61,7 @@ class _ScanPageState extends State<ScanPage> {
           if (emagChecked && products.isNotEmpty) {
             var emagResults = await scrapeEMAG(products.first.title!);
             emagResults.forEach((product) {
+              product.isFavorited = favorites.contains(product.itemId);
               product.source = 'eMAG';
             });
             if (!ebayChecked) {

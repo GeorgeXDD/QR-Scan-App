@@ -21,7 +21,7 @@ class ReviewService {
             .get();
 
         double averageScore = 0;
-        int reviewCount = reviewSnapshot.docs.length; // Count reviews
+        int reviewCount = reviewSnapshot.docs.length;
         if (reviewCount > 0) {
           double totalScore = reviewSnapshot.docs.fold(0.0,
               (prev, doc) => prev + (doc.data()['score'] as double? ?? 0.0));
@@ -30,7 +30,7 @@ class ReviewService {
 
         var product = Product.fromFirestoreReview(productData)
           ..score = double.parse(averageScore.toStringAsFixed(1))
-          ..reviewCount = reviewCount; // Add review count to Product model
+          ..reviewCount = reviewCount;
         productList.add(product);
       }
       yield productList;
