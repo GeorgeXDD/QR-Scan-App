@@ -14,6 +14,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final _auth = FirebaseAuth.instance;
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   final _usernameController = TextEditingController();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
@@ -32,6 +33,9 @@ class _RegisterPageState extends State<RegisterPage> {
           _buildTextField(_emailController, 'Email'),
           SizedBox(height: 10),
           _buildTextField(_passwordController, 'Password', isPassword: true),
+          SizedBox(height: 10),
+          _buildTextField(_confirmPasswordController, 'Confirm Password',
+              isPassword: true),
         ],
       );
 
@@ -75,6 +79,9 @@ class _RegisterPageState extends State<RegisterPage> {
             !_passwordController.text.contains(RegExp(r'[0-9]'))) {
           validationMessage =
               "Password must be at least 6 characters, include an upper case letter and a digit.";
+        } else if (_passwordController.text !=
+            _confirmPasswordController.text) {
+          validationMessage = "Passwords do not match.";
         }
         break;
       case 1:

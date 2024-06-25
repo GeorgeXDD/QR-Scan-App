@@ -19,12 +19,20 @@ class EbayService {
     );
 
     if (response.statusCode == 200) {
-      final responseData = json.decode(response.body);
-      List<Map<String, dynamic>> items =
-          List<Map<String, dynamic>>.from(responseData['itemSummaries']);
-      return items.isNotEmpty ? items : null;
+      try {
+        final responseData = json.decode(response.body);
+        List<Map<String, dynamic>> items =
+            List<Map<String, dynamic>>.from(responseData['itemSummaries']);
+        return items.isNotEmpty ? items : null;
+      } on FormatException catch (e) {
+        print('Error decoding JSON response: $e');
+        return null;
+      } catch (e) {
+        print('Error fetching product details: $e');
+        return null;
+      }
     } else {
-      print('Failed to load product data: ${response.body}');
+      print('Unexpected response format: ${response.body}');
       return null;
     }
   }
